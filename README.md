@@ -98,7 +98,7 @@ Her haritada 3 bölüm ve bir **👑 Kral Bukalemun** bölümü var. Bir haritay
 | Yedek şarjör | sınırsız | 3 | 2 | 1 |
 | Iska cezası | yok | -25 puan | -50 puan, -3 sn | -100 puan, -5 sn |
 | Sahte bukalemun | yok | x1 | x1.5 | x2 |
-| Bukalemun göçü (tur ortasında yer değiştirme) | yok | 1 kez (2. bölümden sonra) | 2 kez | 2 kez |
+| Bukalemun göçü (tur ortasında yer değiştirme) | yok | 1 kez (2. haritadan itibaren) | 2 kez | 2 kez |
 | Puan / altın | x0.75 / x0.8 | x1 | x1.35 / x1.25 | x1.8 / x1.6 |
 
 Zor ve Kâbus'ta bukalemunlar fenerden daha çabuk kaçar, kamuflajları daha kusursuz olur ve dikenliler daha sık saldırır. Kâbus'ta Kral 4 isabet ister.
