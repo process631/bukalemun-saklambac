@@ -159,6 +159,47 @@ body.touch #hud-bottom{bottom:auto;top:auto}
 body.touch #scan-box,body.touch #ammo-box{display:none}
 body.touch #ammo-mini{display:flex!important}
 @media (max-height:520px){#side{top:64px;left:8px;width:150px;padding:6px 8px;font-size:12px}#side .big{font-size:20px!important}#hud-top .chip{padding:4px 10px}#hud-top .chip .big{font-size:18px}#hud-top .chip .ico{width:30px;height:30px;font-size:16px}#joy{bottom:24px;left:20px;width:116px;height:116px}}
+
+#mode-text{position:absolute;left:50%;top:112px;transform:translateX(-50%);font-weight:800;font-size:15px;color:#7dd3fc;text-shadow:0 2px 6px #000;white-space:nowrap}
+#mode-text:empty{display:none}
+#gadgets{position:absolute;left:50%;bottom:66px;transform:translateX(-50%);display:flex;gap:8px}
+.gslot{font-family:inherit;position:relative;width:62px;height:54px;border-radius:14px;background:rgba(15,23,42,.82);border:2px solid rgba(249,115,22,.6);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.gslot .key{position:absolute;left:-6px;top:-8px;font-size:11px;padding:0 5px;background:#f97316}
+.gslot b{position:absolute;right:4px;bottom:1px;font-size:13px;color:#fed7aa}
+.gslot.empty{opacity:.38;filter:grayscale(1)}
+.gslot.on{background:rgba(234,88,12,.6);box-shadow:0 0 16px #f97316}
+body.touch .gslot{pointer-events:auto;width:56px;height:50px}
+body.touch .gslot .key{display:none}
+body.touch #gadgets{bottom:14px}
+#thermal-fx{position:fixed;inset:0;pointer-events:none;z-index:16;opacity:0;transition:opacity .25s;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 45%,rgba(30,7,60,.75) 100%),repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 4px)}
+body.thermal-active #thermal-fx{opacity:1}
+#ach-toast{position:fixed;right:18px;top:18px;z-index:80;display:flex;gap:12px;align-items:center;padding:12px 16px;border-radius:16px;background:rgba(15,23,42,.95);border:2px solid #fbbf24;box-shadow:0 8px 30px rgba(0,0,0,.5);transform:translateX(calc(100% + 40px));opacity:0;transition:transform .4s cubic-bezier(.2,1.4,.4,1),opacity .3s;pointer-events:none;max-width:320px}
+#ach-toast.show{transform:none;opacity:1}
+#ach-toast .ai{font-size:34px}#ach-toast .at{font-size:11px;color:#fbbf24;font-weight:700;text-transform:uppercase}#ach-toast .an{font-weight:800;font-size:17px}#ach-toast .ad{font-size:12px;color:#fde68a}
+#levels.single{grid-template-columns:1fr}
+.mode-card{display:flex;gap:14px;align-items:flex-start;text-align:left;border-radius:16px;padding:14px;border:2px solid #fbbf24;background:rgba(30,41,59,.75)}
+.mode-card .mi{font-size:42px}.mode-card .lt{font-size:18px;font-weight:800;margin-bottom:4px}.mode-card .ld{font-size:13px;color:#cbd5e1;line-height:1.5}.mode-card .ls2{margin-top:8px;font-size:13px;color:#fde68a}
+#menu-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+#menu-btns .btn{min-width:0;padding:11px 8px;font-size:15px}
+#skin-list,#ach-list{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;max-height:56vh;overflow:auto;padding-right:4px}
+.skin.sel{border-color:#fbbf24}
+.sw{width:46px;height:46px;border-radius:12px;border:2px solid rgba(255,255,255,.25);flex:none}
+@keyframes hue{to{filter:hue-rotate(360deg)}}
+.ach{display:flex;gap:10px;align-items:center;background:rgba(30,41,59,.5);border:1px solid rgba(71,85,105,.7);border-radius:14px;padding:10px 12px;opacity:.55}
+.ach.got{opacity:1;border-color:rgba(251,191,36,.7);background:rgba(120,53,15,.3)}
+.ach .ai{font-size:28px}.ach .un{font-weight:700}.ach .ud{font-size:12px;color:#94a3b8}
+#lb-list{margin-top:12px;max-height:56vh;overflow:auto}
+#lb-list table{width:100%;border-collapse:collapse;font-size:14px}
+#lb-list th{color:#94a3b8;font-weight:600;text-align:left;padding:6px;border-bottom:1px solid #334155}
+#lb-list td{padding:6px;border-bottom:1px solid rgba(51,65,85,.5)}
+#lb-list tr:nth-child(2) td{color:#fde68a;font-weight:700}
+#lb-list .dt{color:#64748b;font-size:12px}
+#lb-list .empty{color:#64748b;text-align:center;padding:16px}
+#lb-list .lbm .empty{padding:0}
+.lbm{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:8px 10px;border-bottom:1px solid rgba(51,65,85,.6)}.lbm b{min-width:170px}
+#set-name{font-family:inherit;background:#0f172a;border:2px solid #475569;color:#fff;border-radius:10px;padding:6px 10px;width:170px;font-size:15px}
+@media (max-width:700px){#skin-list,#ach-list{grid-template-columns:1fr}#menu-btns{grid-template-columns:repeat(2,1fr)}#mode-text{top:92px;font-size:13px}.mode-card .mi{font-size:30px}}
+@media (max-height:520px){#t-pause{top:16px!important;right:166px;width:38px;height:38px;font-size:13px}#gadgets{bottom:8px}.gslot{width:48px!important;height:42px!important;font-size:20px}#mode-text{top:60px}}
 </style>
 </head>
 <body>
@@ -167,6 +208,8 @@ body.touch #ammo-mini{display:flex!important}
 <div id="scan-fx" class="scan-overlay scan-grid"></div>
 <div id="lock-vignette"></div>
 <div id="ink-fx"></div>
+<div id="thermal-fx"></div>
+<div id="ach-toast"></div>
 <div id="freeze-vignette"></div>
 
 <div id="crosshair" class="crosshair hidden"><div class="h"></div><div class="v"></div><div class="ring"></div><div class="dot"></div></div>
@@ -188,9 +231,11 @@ body.touch #ammo-mini{display:flex!important}
   <div id="hud-top">
     <div class="chip" style="border-color:rgba(16,185,129,.5)"><div class="ico" style="background:rgba(16,185,129,.2)">🦎</div><div><div class="lbl" style="color:#6ee7b7">Saklananlar</div><div class="big" id="hiders-left-text">Kalan: 9/9</div></div></div>
     <div id="toast-message">Oyun Başladı!</div>
-    <div class="chip" style="border-color:rgba(245,158,11,.5)"><div class="ico" style="background:rgba(245,158,11,.2)">⏳</div><div><div class="lbl" style="color:#fcd34d">Kalan Süre</div><div class="big mono" id="game-timer-text">03:00</div></div></div>
+    <div class="chip" style="border-color:rgba(245,158,11,.5)"><div class="ico" style="background:rgba(245,158,11,.2)">⏳</div><div><div class="lbl" style="color:#fcd34d" id="timer-label">Kalan Süre</div><div class="big mono" id="game-timer-text">03:00</div></div></div>
   </div>
   <div id="boss-bar" class="hidden">👑 Kral Bukalemun</div>
+  <div id="mode-text"></div>
+  <div id="gadgets"><button class="gslot" id="g-thermal" title="Termal Gözlük"><span class="key">1</span>🌡️<b>1</b></button><button class="gslot" id="g-sonar" title="Sonar Bombası"><span class="key">2</span>📯<b>1</b></button><button class="gslot" id="g-paint" title="Boya Bombası"><span class="key">3</span>🎨<b>1</b></button></div>
   <div id="side" class="chip" style="display:block">
     <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl" style="color:#f0abfc">⭐ Skor</span><span id="combo-text" style="font-size:12px;font-weight:700;color:#fcd34d"></span></div>
     <div id="score-text" class="big" style="font-size:30px">0</div>
@@ -208,7 +253,7 @@ body.touch #ammo-mini{display:flex!important}
       <div class="bar" style="height:10px"><div id="scan-progress-bar" style="width:100%"></div></div>
       <div class="note" style="font-size:11px;color:#94a3b8;margin-top:4px" id="scan-note">3 sn boyunca kamufle olanları parlatır (20 sn bekleme)</div>
     </div>
-    <div id="hints"><span><b>WASD</b> Hareket</span><span><b>SHIFT</b> Koşma</span><span><b>BOŞLUK</b> Zıpla</span><span><b>SOL TIK</b> Lazer</span><span><b>Q</b> Tarama</span><span><b>R</b> Doldur</span><span><b>ESC</b> Duraklat</span></div>
+    <div id="hints"><span><b>WASD</b> Hareket</span><span><b>SHIFT</b> Koşma</span><span><b>BOŞLUK</b> Zıpla</span><span><b>SOL TIK</b> Lazer</span><span><b>Q</b> Tarama</span><span><b>R</b> Doldur</span><span><b>1 2 3</b> Aletler</span><span><b>ESC</b> Duraklat</span></div>
     <div id="ammo-box" class="chip"><div class="ico" style="background:rgba(168,85,247,.2);font-size:26px">🔫</div><div><div class="lbl" style="color:#d8b4fe">Lazer Şarjörü</div><div class="big" id="ammo-text">12 / 12</div><div id="ammo-pips"></div><div id="ammo-subtext" style="font-size:11px;color:#94a3b8">Boşa ateş silahı 5 sn kilitler!</div></div></div>
   </div>
 </div>
@@ -240,12 +285,13 @@ body.touch #ammo-mini{display:flex!important}
     <div style="text-align:center;margin-bottom:6px"><span class="pill">🦎 Low-Poly 3D FPS Kamuflaj Oyunu</span></div>
     <h1 class="title" id="menu-title">Bukalemun Saklambaç</h1>
     <p class="sub" id="menu-subtitle">1 Arayan (Sen) vs Kamufle Olan Yapay Zeka Bukalemunlar!</p>
+    <div id="mode-row" class="seg"></div>
     <div id="diff-row" class="seg"></div>
     <div id="map-tabs" class="seg"></div>
     <div id="map-desc"></div>
     <div id="levels"></div>
     <div class="row" style="margin-top:16px"><button id="start-btn" class="btn primary">🎯 Oyunu Başlat</button></div>
-    <div class="row"><button id="shop-btn" class="btn indigo">🛠️ Atölye <span class="gold" id="menu-gold" style="color:#fde68a"></span></button><button id="how-btn" class="btn">📖 Nasıl Oynanır</button><button id="settings-btn" class="btn">⚙️ Ayarlar</button></div>
+    <div id="menu-btns"><button id="shop-btn" class="btn indigo">🛠️ Atölye <span class="gold" id="menu-gold" style="color:#fde68a"></span></button><button id="skins-btn" class="btn">🎨 Kozmetik</button><button id="ach-btn" class="btn">🏅 Başarımlar</button><button id="lb-btn" class="btn">🏆 Rekorlar</button><button id="how-btn" class="btn">📖 Nasıl Oynanır</button><button id="settings-btn" class="btn">⚙️ Ayarlar</button></div>
     <div id="menu-stats"></div>
   </div>
 </div>
@@ -266,12 +312,17 @@ body.touch #ammo-mini{display:flex!important}
         • <b>Q</b> renk taraması kamufle olanları parlatır. <b>R</b> şarjörü doldurur.<br>
         • 🔥 <b>Sıcak/Soğuk</b> göstergesi ve kıkırdamalar (sol/sağ kulaktan!) seni yönlendirir.</div>
       <div class="card"><h3 style="color:#a3e635">🦎 Bukalemun Türleri</h3>
-        <span style="color:#fb923c">● Turuncu</span>: Sıradan, 100 puan.<br>
-        <span style="color:#60a5fa">● Mavi Kaçak</span>: Yaklaşınca hızla kaçar, 150 puan.<br>
-        <span style="color:#c084fc">● Mor Usta</span>: Neredeyse kusursuz kamuflaj, 200 puan.</div>
-      <div class="card"><h3 style="color:#f0abfc">✨ Güç Küreleri</h3>
-        ⚡ Süper hız · ⏱ +12 sn · 🔓 Silah yenileme · 📡 Radar · ❄️ Dondurucu · ✖2 Çift puan.<br>
-        Üst üste vuruş = <b>kombo</b>. Bölümleri yıldızla bitir, altın kazan, <b>Atölye</b>'de ekipmanını geliştir!</div>
+        <span style="color:#fb923c">● Turuncu</span>: Sıradan, 100 puan. <span style="color:#60a5fa">● Mavi Kaçak</span>: Hızla kaçar.<br>
+        <span style="color:#c084fc">● Mor Usta</span>: Neredeyse kusursuz kamuflaj. <span style="color:#2dd4bf">● Sinsi</span>: Sen bakmazken yer değiştirir.<br>
+        <span style="color:#f87171">● Dikenli</span>: Mürekkep tükürür (💢 görünce kaç!). <span style="color:#f472b6">● Prizma</span>: Rengini sürekli günceller.<br>
+        <span style="color:#facc15">👑 Kral</span>: Birkaç isabet ister, sahte kopyalar bırakır. <span style="color:#9ca3af">🪤 Sahte</span>: Nefes almaz, vurursan süre kaybedersin!</div>
+      <div class="card"><h3 style="color:#f0abfc">✨ Küreler ve Aletler</h3>
+        ⚡ Hız · ⏱ +12 sn · 🔓 Yenileme · 📡 Radar · ❄️ Dondurucu · ✖2 Çift puan · 🔋 Mermi · 🛡️ Kalkan · 🐌 Ağır çekim · 🎒 Alet şarjı.<br>
+        <b>1</b> 🌡️ Termal gözlük (sıcak = bukalemun, soğuk = sahte) · <b>2</b> 📯 Sonar bombası · <b>3</b> 🎨 Boya bombası.</div>
+      <div class="card"><h3 style="color:#38bdf8">🎮 Modlar</h3>
+        🗺️ <b>Kampanya</b>: 7 harita, 28 bölüm. ♾️ <b>Sonsuz</b>: dalgalar, süre biterse biter. ⏱️ <b>Zaman Yarışı</b>: 8 bukalemun, en hızlı süre. 📅 <b>Günlük</b>: herkese aynı tohumlu harita ve kurallar.</div>
+      <div class="card"><h3 style="color:#fb7185">💀 Zorluk</h3>
+        Kolay / Normal / Zor / Kâbus: süre, mermi, ıska cezası, kaçma ve saldırganlık değişir. Zor ve Kâbus'ta bukalemunlar tur ortasında <b>göç eder</b>. Daha zor = daha çok puan ve altın.</div>
     </div>
     <div class="row"><button class="btn back-btn">⬅ Geri</button></div>
   </div>
@@ -293,6 +344,7 @@ body.touch #ammo-mini{display:flex!important}
   <div class="panel" style="max-width:520px">
     <h2 class="title" style="font-size:36px">⚙️ Ayarlar</h2>
     <div style="margin-top:12px">
+      <div class="setrow"><span>👤 Oyuncu adı (rekorlar)</span><input id="set-name" maxlength="14"></div>
       <div class="setrow"><span>🖱️ Fare hassasiyeti</span><input type="range" id="set-sens" min="0.3" max="2.5" step="0.1"></div>
       <div class="setrow"><span>🔭 Görüş açısı (FOV)</span><input type="range" id="set-fov" min="60" max="95" step="1"></div>
       <div class="setrow"><span>🔊 Ses efektleri</span><input type="range" id="set-sfx" min="0" max="1" step="0.05"></div>
@@ -304,6 +356,34 @@ body.touch #ammo-mini{display:flex!important}
   </div>
 </div>
 
+<!-- Kozmetik -->
+<div id="skins-screen" class="screen hidden">
+  <div class="panel">
+    <h2 class="title" style="font-size:36px">🎨 Silah Kaplamaları</h2>
+    <p class="sub">Altınla satın al ya da başarımlarla aç. Kaplamalar lazer rengini de değiştirir.</p>
+    <div style="text-align:center;margin-top:8px;font-size:18px">Altın: <span class="gold" id="skin-gold">0</span></div>
+    <div id="skin-list"></div>
+    <div class="row"><button class="btn back-btn">⬅ Geri</button></div>
+  </div>
+</div>
+<!-- Başarımlar -->
+<div id="ach-screen" class="screen hidden">
+  <div class="panel">
+    <h2 class="title" style="font-size:36px">🏅 Başarımlar <span id="ach-count" style="font-size:18px;color:#fde68a"></span></h2>
+    <div id="ach-list"></div>
+    <div class="row"><button class="btn back-btn">⬅ Geri</button></div>
+  </div>
+</div>
+<!-- Rekorlar -->
+<div id="lb-screen" class="screen hidden">
+  <div class="panel">
+    <h2 class="title" style="font-size:36px">🏆 Rekor Tablosu</h2>
+    <p class="sub" style="font-size:14px">Bu cihazda kaydedilen en iyi 10 skor. İsmini Ayarlar'dan değiştirebilirsin.</p>
+    <div id="lb-tabs" class="seg"></div>
+    <div id="lb-list"></div>
+    <div class="row"><button class="btn back-btn">⬅ Geri</button></div>
+  </div>
+</div>
 <!-- Bölüm sonu -->
 <div id="result-screen" class="screen hidden" style="background:rgba(2,6,23,.7)">
   <div class="panel" style="text-align:center">
@@ -312,14 +392,14 @@ body.touch #ammo-mini{display:flex!important}
     <div class="stars" id="stars"></div>
     <div class="stat-grid">
       <div class="stat"><div class="sl">Bulunan</div><div class="sv" id="stat-found" style="color:#34d399">9 / 9</div></div>
-      <div class="stat"><div class="sl">Kalan Süre</div><div class="sv" id="stat-time" style="color:#fbbf24">01:24</div></div>
+      <div class="stat"><div class="sl" id="stat-time-l">Kalan Süre</div><div class="sv" id="stat-time" style="color:#fbbf24">01:24</div></div>
       <div class="stat"><div class="sl">İsabet</div><div class="sv" id="stat-shots" style="color:#22d3ee">%75</div></div>
       <div class="stat"><div class="sl">Skor</div><div class="sv" id="stat-score" style="color:#f0abfc">0</div></div>
     </div>
     <p id="result-gold" style="margin-top:12px;font-size:17px"></p>
     <p id="result-best" style="margin-top:2px;font-size:13px;color:#94a3b8"></p>
     <div class="row" style="margin-top:16px"><button id="next-btn" class="btn primary">➡ Sonraki Bölüm</button></div>
-    <div class="row"><button id="retry-btn" class="btn green">🔄 Tekrar Oyna</button><button id="result-shop-btn" class="btn indigo">🛠️ Atölye</button><button id="result-menu-btn" class="btn">🏠 Ana Menü</button></div>
+    <div class="row"><button id="retry-btn" class="btn green">🔄 Tekrar Oyna</button><button id="result-shop-btn" class="btn indigo">🛠️ Atölye</button><button id="result-lb-btn" class="btn">🏆 Rekorlar</button><button id="result-menu-btn" class="btn">🏠 Ana Menü</button></div>
   </div>
 </div>
 
@@ -340,17 +420,21 @@ body.touch #ammo-mini{display:flex!important}
  * 0. YARDIMCILAR, KAYIT (localStorage)
  ********************************************************************/
 const $ = id => document.getElementById(id);
-const rand = (a, b) => a + Math.random() * (b - a);
-const pick = a => a[Math.floor(Math.random() * a.length)];
+// Tohumlanabilir rastgelelik: günlük meydan okumada harita, türler ve saklanma yerleri aynı tohumdan gelir
+let RNG = Math.random;
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rand = (a, b) => a + RNG() * (b - a);
+const pick = a => a[Math.floor(RNG() * a.length)];
 const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
 const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && matchMedia('(pointer: coarse)').matches);
 
 const SAVE_KEY = 'bukalemun_saklambac_v2';
 const DEFAULT_SAVE = { gold: 0, unlocked: 1, stars: {}, best: {}, upg: {}, totalFound: 0, games: 0, lastLevel: 0,
-  settings: { sens: 1, fov: 72, sfx: 0.8, music: 0.45, invert: false, quality: 'high', diff: 'normal' } };
+  ach: {}, lb: {}, skin: 'klasik', skins: ['klasik'], daily: {}, race: {}, endlessBest: 0, kings: 0, gadgetsUsed: 0, decoysHit: 0,
+  settings: { sens: 1, fov: 72, sfx: 0.8, music: 0.45, invert: false, quality: 'high', diff: 'normal', mode: 'campaign', name: 'Avcı' } };
 function loadSave() {
   const s = JSON.parse(JSON.stringify(DEFAULT_SAVE));
-  try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (d) { Object.assign(s, d); s.settings = Object.assign({}, DEFAULT_SAVE.settings, d.settings || {}); s.stars = d.stars || {}; s.best = d.best || {}; s.upg = d.upg || {}; } } catch (e) { }
+  try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (d) { Object.assign(s, d); s.settings = Object.assign({}, DEFAULT_SAVE.settings, d.settings || {}); s.stars = d.stars || {}; s.best = d.best || {}; s.upg = d.upg || {}; ['ach', 'lb', 'daily', 'race'].forEach(k => { s[k] = d[k] || {}; }); if (!Array.isArray(s.skins)) s.skins = ['klasik']; } } catch (e) { }
   return s;
 }
 let save = loadSave();
@@ -568,6 +652,12 @@ const UPGRADES = [
   { id: 'light', ico: '🔦', name: 'Güçlü Fener', desc: 'Fener menzili ve genişliği +12%', max: 3, base: 60 },
   { id: 'time', ico: '⏱️', name: 'Ekstra Süre', desc: 'Her bölüme +10 sn', max: 3, base: 100 },
   { id: 'orbs', ico: '🔮', name: 'Şans Küresi', desc: 'Haritada +1 güç küresi', max: 3, base: 80 },
+  { id: 'reserve', ico: '🔋', name: 'Yedek Batarya', desc: '+1 yedek şarjör (Kolay hariç)', max: 3, base: 90 },
+  { id: 'combo', ico: '🔥', name: 'Kombo Zinciri', desc: 'Kombo süresi +3 sn', max: 3, base: 80 },
+  { id: 'goldx', ico: '🧲', name: 'Altın Mıknatısı', desc: '+15% altın kazancı', max: 3, base: 120 },
+  { id: 'shieldmod', ico: '🥽', name: 'Mürekkep Gözlüğü', desc: 'Mürekkep ve sersemleme -15%', max: 3, base: 90 },
+  { id: 'gadget', ico: '🎒', name: 'Alet Çantası', desc: 'Her alete +1 şarj (termal, sonar, boya)', max: 2, base: 180 },
+  { id: 'thermal', ico: '🌡️', name: 'Termal Pil', desc: 'Termal gözlük süresi +1.5 sn', max: 2, base: 110 },
 ];
 const upgCost = (u, lv) => Math.round(u.base * Math.pow(1.7, lv));
 const ORB_TYPES = [
@@ -578,6 +668,9 @@ const ORB_TYPES = [
   { id: 'freeze', color: 0xbfdbfe, label: '❄️ Dondurucu! Bukalemunlar kaçamaz (10 sn)' },
   { id: 'double', color: 0xf472b6, label: '✖2 Çift puan! (15 sn)' },
   { id: 'ammo', color: 0xa3e635, label: '🔋 Yedek mermi +1 şarjör!' },
+  { id: 'shield', color: 0x93c5fd, label: '🛡️ Kalkan! Bir sonraki mürekkebi engeller (25 sn)' },
+  { id: 'slowmo', color: 0x818cf8, label: '🐌 Ağır çekim! Bukalemunlar yavaşladı (8 sn)' },
+  { id: 'gadget', color: 0xf97316, label: '🎒 Alet şarjı! Rastgele bir alete +1' },
 ];
 const HIT_MSGS = ['🎯 Yakaladım seni!', '🦎 Kamuflaj yetmedi!', '😎 Göz var, izan var!', '💥 Bom! Bir bukalemun daha!', '🕵️ Sherlock Bukalemun!', '👀 Kartal gözü!', '🎨 Renk körü değilim!'];
 const FLEE_MSGS = ['🏃 Bir bukalemun kaçıyor!', '😱 Yakalandığını anladı, kaçıyor!', '💨 Kaçak tespit edildi!'];
@@ -1162,7 +1255,7 @@ let maxAmmo = BASE_AMMO, currentAmmo = BASE_AMMO, weaponLockTimer = 0, lockMax =
 let totalShotsFired = 0, totalShotsHit = 0;
 let scanActiveTimer = 0, scanCooldownTimer = 0, isScanMode = false, scanTime = BASE_SCAN_TIME, scanCd = BASE_SCAN_CD;
 let score = 0, combo = 0, comboTimer = 0, bestCombo = 0, giggleCooldown = 0, prepFast = false;
-const buffs = { speed: 0, radar: 0, freeze: 0, double: 0 };
+const buffs = { speed: 0, radar: 0, freeze: 0, double: 0, shield: 0, slowmo: 0 };
 let hiders = [], decoys = [], orbs = [], lasers = [], popups = [], pulses = [], projectiles = [];
 let reserveAmmo = 0, inkTimer = 0, inkMax = 1, stunTimer = 0, migrateMarks = [], kingRef = null;
 let flashlight, flashlightTarget, weaponGroup, muzzleLight, closeLight, weaponScene, weaponCam, worldFlash;
@@ -1209,12 +1302,12 @@ class HiderAI {
     this.camoTargetColor = this.defaultColor.clone();
     this.state = 'MOVING'; this.camoTransition = 0; this.isCamouflaged = false; this.stayTimer = 0;
     this.path = []; this.fleeing = false; this.fleesLeft = typeIdx === 1 ? 3 : 2; this.alarm = 0; this.senseT = Math.random() * 0.1;
-    this.blinkT = rand(3, 8); this.paintT = 0; this.heading = 0; this.anim = Math.random() * 10;
+    this.blinkT = rand(3, 8); this.paintT = 0; this.sonarT = 0; this.heading = 0; this.anim = Math.random() * 10;
 
     this.group = new THREE.Group();
     this.bodyMaterial = new THREE.MeshStandardMaterial({ color: this.defaultColor, roughness: 0.4, metalness: 0.15, emissive: new THREE.Color(0), emissiveIntensity: 0 });
     this.hitMeshes = [];
-    const part = (geo, x, y, z) => { const m = new THREE.Mesh(geo, this.bodyMaterial); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; m.userData.hiderRef = this; this.group.add(m); this.hitMeshes.push(m); return m; };
+    const part = (geo, x, y, z) => { const m = new THREE.Mesh(geo, this.bodyMaterial); m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; m.userData.hiderRef = this; m.layers.enable(1); this.group.add(m); this.hitMeshes.push(m); return m; };
     this.torsoMesh = part(HIDER_GEO.torso, 0, 0.85, 0);
     this.headMesh = part(HIDER_GEO.head, 0, 1.82, 0);
     this.crestMesh = part(HIDER_GEO.crest, 0, 2.25, -0.1); this.crestMesh.rotation.x = -0.3;
@@ -1272,13 +1365,13 @@ class HiderAI {
     });
     if (cands.length === 0) cands = hidingWaypoints.slice();
     // Dikey haritada bukalemunlar yüksek yerleri sever
-    if (MAP_INFO[currentMapId].vertical && !flee && Math.random() < 0.45) { const hi = cands.filter(w => w.anchor); if (hi.length) cands = hi; }
+    if (MAP_INFO[currentMapId].vertical && !flee && RNG() < 0.45) { const hi = cands.filter(w => w.anchor); if (hi.length) cands = hi; }
     if (flee) { // oyuncudan uzaklaşan noktaları tercih et
       cands.sort((p, q) => q.distanceTo(playerPos) - p.distanceTo(playerPos));
       cands = cands.slice(0, Math.max(4, cands.length >> 2));
     }
     for (let tries = 0; tries < 6 && cands.length; tries++) {
-      const i = Math.floor(Math.random() * cands.length), wp = cands[i];
+      const i = Math.floor(RNG() * cands.length), wp = cands[i];
       const path = this.buildRoute(wp);
       if (path && path.length) { this.targetPoint.copy(wp); this.targetWp = wp; this.path = path; break; }
       cands.splice(i, 1);
@@ -1411,7 +1504,7 @@ class HiderAI {
         if (this.dynT <= 0) { this.dynT = rand(2.5, 4); this.sampleNearestSurfaceColor(); this.camoTransition = 0.3; }
         this.bodyMaterial.color.copy(this.currentColor).offsetHSL(Math.sin(t * 0.9 + this.index) * 0.008, 0, Math.sin(t * 1.3) * 0.01);
       }
-      if (this.paintT > 0) { this.paintT -= dt; this.bodyMaterial.color.setHex(0xff00e6); if (this.paintT <= 0) { this.paintT = 0; this.bodyMaterial.color.copy(this.currentColor); } }
+      if (this.paintT > 0) { this.paintT -= dt; this.bodyMaterial.color.setHex(this.isDecoy ? 0x6b7280 : 0xff00e6); if (this.paintT <= 0) { this.paintT = 0; this.bodyMaterial.color.copy(this.currentColor); } }
       // Nefes alma ve ara sıra göz kırpma (dikkatli bakan arayan için ipucu) — sahteler nefes almaz!
       const bs = this.baseScale;
       if (!this.isDecoy) {
@@ -1441,7 +1534,7 @@ class HiderAI {
             if (dSeek < 3.2 && this.typeIdx === 1) this.startle(2);
             else if (lit) {
               this.alarm += 0.1 * (dSeek < 9 ? 2 : 1);
-              if (this.alarm > this.type.alarm) this.startle(1);
+              if (this.alarm * (level.alarmMul || 1) > this.type.alarm) this.startle(1);
             } else this.alarm = Math.max(0, this.alarm - 0.05);
           }
           // Dikenli & Kral: karşılık verir! (mürekkep tükürür)
@@ -1552,7 +1645,7 @@ function createFirstPersonWeaponAndLight() {
   weaponGroup = new THREE.Group();
   const gunBodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.7 });
   const gunAccentMat = new THREE.MeshStandardMaterial({ color: 0x00f2fe, emissive: 0x00c6ff, emissiveIntensity: 0.7 });
-  weaponGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, 0.65), gunBodyMat));
+  weaponGroup.add(new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.22, 0.65), gunBodyMat)); weaponGroup.bodyMat = gunBodyMat;
   const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.5, 10), gunBodyMat);
   barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 0.04, -0.45); weaponGroup.add(barrel);
   const core = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.06, 0.42), gunAccentMat);
@@ -1576,14 +1669,14 @@ function createFirstPersonWeaponAndLight() {
 }
 function setWeaponLocked(locked) {
   const m = weaponGroup.weaponCoreMat;
-  m.color.setHex(locked ? 0xff2244 : 0x00f2fe); m.emissive.setHex(locked ? 0xff0022 : 0x00c6ff);
+  const sk = curSkin(); m.color.setHex(locked ? 0xff2244 : sk.core); m.emissive.setHex(locked ? 0xff0022 : sk.emi);
 }
 
 const LASER_GEO = new THREE.CylinderGeometry(0.025, 0.025, 1, 6); LASER_GEO.translate(0, 0.5, 0); LASER_GEO.rotateX(Math.PI / 2);
 const LASER_GLOW_GEO = new THREE.CylinderGeometry(0.055, 0.055, 1, 6); LASER_GLOW_GEO.translate(0, 0.5, 0); LASER_GLOW_GEO.rotateX(Math.PI / 2);
 function spawnLaserBeam(start, end, ok) {
   const d = start.distanceTo(end), g = new THREE.Group();
-  const c = ok ? 0x10b981 : 0xf43f5e;
+  const c = ok ? curSkin().beam : 0xf43f5e;
   const m1 = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 });
   const m2 = new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false });
   g.add(new THREE.Mesh(LASER_GEO, m1), new THREE.Mesh(LASER_GLOW_GEO, m2));
@@ -1661,7 +1754,7 @@ function spawnOrbs() {
   }
 }
 function collectOrb(o) {
-  sfx.playPowerup();
+  sfx.playPowerup(); stats.orbs++;
   addScore(50, o.mesh.position, '#fde68a');
   spawnBurst(o.mesh.position, 24, new THREE.Color(o.type.color), 5, 6);
   switch (o.type.id) {
@@ -1672,6 +1765,9 @@ function collectOrb(o) {
     case 'freeze': buffs.freeze = 10; sfx.playFreeze(); break;
     case 'double': buffs.double = 15; break;
     case 'ammo': reserveAmmo += maxAmmo; break;
+    case 'shield': buffs.shield = 25; break;
+    case 'slowmo': buffs.slowmo = 8; sfx.playFreeze(); break;
+    case 'gadget': { const g = pick(GADGETS); gadgetCharges[g.id]++; showToast(`🎒 ${g.ico} ${g.name} +1 şarj!`, 'cyan'); o.mesh.visible = o.halo.visible = false; o.respawn = 12; return; }
   }
   showToast(o.type.label, 'cyan');
   o.mesh.visible = o.halo.visible = false; o.respawn = 12;
@@ -1695,7 +1791,7 @@ function updateProjectiles(dt) {
         if (camera.position.distanceTo(p.to) > 2.2) { addPopup('💨 Kıl payı kaçtın!', null, 0, '#6ee7b7', 1.2, 24); continue; }
         if (buffs.shield > 0) { buffs.shield = 0; showToast('🛡️ Kalkan mürekkebi engelledi!', 'cyan'); sfx.playPowerup(); continue; }
         inkMax = inkTimer = 2.8 * (1 - 0.15 * upg('shieldmod')) * (diffKey() === 'kabus' ? 1.3 : 1); stunTimer = 1.3 * (1 - 0.15 * upg('shieldmod'));
-        sfx.playSplat(); shake = 0.5; stats.inked++; buildInkSplats();
+        sfx.playSplat(); shake = 0.5; stats.inked++; buildInkSplats(); save.inkTotal = (save.inkTotal || 0) + 1; if (save.inkTotal >= 10) unlockAch('inked');
         showToast('🦑 Gözüne mürekkep geldi! Kısa süre göremiyorsun!', 'rose');
       } else if (p.onLand) p.onLand(p.to);
     }
@@ -1788,7 +1884,7 @@ function fireLaserWeapon() {
     hitMarker = 0.35; shake = Math.max(shake, 0.3);
     if (wasCamo && hitHider.typeIdx === 2) addPopup('🎩 USTA YAKALANDI', hitHider.group.position, 3.8, '#c084fc', 1.2, 20);
     showToast(`${pick(HIT_MSGS)} (+${got}) Kalan: ${remainingHiders}/${totalHiders}`, 'emerald');
-    save.totalFound = (save.totalFound || 0) + 1;
+    save.totalFound = (save.totalFound || 0) + 1; onCatch(hitHider);
     if (currentAmmo === 0) startReload();
     if (remainingHiders <= 0) setTimeout(() => { if (gameState === 'PLAYING') onAllCaught(); }, 700);
   } else {
@@ -1798,7 +1894,9 @@ function fireLaserWeapon() {
     setWeaponLocked(true);
     const D = diff();
     if (D.missPts) { score = Math.max(0, score - D.missPts); addPopup('-' + D.missPts, null, 0, '#fb7185', 1, 24); }
-    if (D.missTime) { searchTimer = Math.max(1, searchTimer - D.missTime); addPopup(`-${D.missTime} sn`, null, 0, '#fb7185', 1.1, 28); }
+    const mt = D.missTime + (hasMod('glass') ? 6 : 0);
+    if (mode === 'race') { searchTimer = Math.max(1, searchTimer - 5); addPopup('+5 sn ceza', null, 0, '#fb7185', 1.1, 28); }
+    else if (mt) { searchTimer = Math.max(1, searchTimer - mt); addPopup(`-${mt} sn`, null, 0, '#fb7185', 1.1, 28); }
     showToast(`⚠️ Boşa Ateş! Silah ${lockMax.toFixed(1)} saniye kilitlendi!` + (D.missPts ? ` (-${D.missPts} puan)` : ''), 'rose');
     // Iska yakındaki saklananları ürkütür
     hiders.forEach(h => { if (h.alive && h.group.position.distanceTo(hitPoint) < 3) h.startle(1.2); });
@@ -1970,8 +2068,10 @@ function formatTime(seconds) {
 let pipsBuilt = -1;
 function updateHUD() {
   setText('hiders-left-text', `Kalan: ${remainingHiders}/${totalHiders}`);
-  setText('game-timer-text', formatTime(searchTimer));
+  setText('game-timer-text', mode === 'race' ? formatTime2(Math.max(0, levelTime - searchTimer)) : formatTime(searchTimer));
+  setText('timer-label', mode === 'race' ? 'Geçen Süre' : 'Kalan Süre');
   $('game-timer-text').style.color = searchTimer < 20 && gameState === 'PLAYING' ? '#fb7185' : '';
+  updateGadgetHUD();
   const resStr = reserveAmmo === Infinity ? '∞' : reserveAmmo;
   const ammoStr = reloadTimer > 0 ? 'Dolduruluyor…' : `${currentAmmo} / ${maxAmmo} · 🔋${resStr}`;
   setText('ammo-text', ammoStr); setText('ammo-mini-text', reloadTimer > 0 ? '…' : `${currentAmmo}/${maxAmmo} 🔋${resStr}`);
@@ -2007,6 +2107,9 @@ function updateHUD() {
   if (buffs.radar > 0) b.push(`📡 Radar ${buffs.radar.toFixed(1)}s`);
   if (buffs.freeze > 0) b.push(`❄️ Dondurucu ${buffs.freeze.toFixed(1)}s`);
   if (buffs.double > 0) b.push(`✖2 Çift Puan ${buffs.double.toFixed(1)}s`);
+  if (buffs.shield > 0) b.push(`🛡️ Kalkan ${buffs.shield.toFixed(1)}s`);
+  if (buffs.slowmo > 0) b.push(`🐌 Ağır Çekim ${buffs.slowmo.toFixed(1)}s`);
+  if (thermalOn) b.push(`🌡️ Termal ${thermalT.toFixed(1)}s`);
   if (stunTimer > 0) b.push(`<span id="stun-text">😵 Sersem ${stunTimer.toFixed(1)}s</span>`);
   $('ink-fx').style.opacity = inkTimer > 0 ? Math.min(1, inkTimer / inkMax * 1.5).toFixed(2) : 0;
   const bb = $('boss-bar');
@@ -2056,6 +2159,7 @@ function drawFx(dt) {
     });
     fctx.globalAlpha = 1;
   }
+  drawGadgetFx();
   // Skor yazıları
   for (let i = popups.length - 1; i >= 0; i--) {
     const p = popups[i]; p.life -= dt;
@@ -2090,7 +2194,7 @@ function drawFx(dt) {
 /********************************************************************
  * 11. EKRANLAR: MENÜ, BÖLÜMLER, ATÖLYE, AYARLAR, SONUÇ
  ********************************************************************/
-const SCREENS = ['menu-screen', 'how-screen', 'shop-screen', 'settings-screen', 'result-screen', 'pause-overlay'];
+const SCREENS = ['menu-screen', 'how-screen', 'shop-screen', 'settings-screen', 'result-screen', 'pause-overlay', 'skins-screen', 'ach-screen', 'lb-screen'];
 let screenBack = 'menu-screen';
 function showScreen(id) { SCREENS.forEach(s => $(s).classList.toggle('hidden', s !== id)); }
 let selLevel = clamp(save.lastLevel || 0, 0, save.unlocked - 1);
@@ -2103,7 +2207,16 @@ function mixHtml(L) {
   return parts.join(' ');
 }
 function renderMenu() {
-  const selMap = LEVELS[selLevel].map;
+  const selMap = LEVELS[selLevel].map, mk = modeKey();
+  // Mod seçimi
+  const mr = $('mode-row'); mr.innerHTML = '';
+  Object.keys(MODES).forEach(k => {
+    const M = MODES[k], b = document.createElement('button');
+    b.className = k === mk ? 'sel' : ''; b.textContent = `${M.ico} ${M.name}`; b.title = M.desc;
+    b.onclick = () => { sfx.init(); sfx.playClick(); save.settings.mode = k; persist(); renderMenu(); buildWorld(k === 'daily' ? dailyLevel().map : LEVELS[selLevel].map); };
+    mr.appendChild(b);
+  });
+  $('map-tabs').style.display = mk === 'campaign' || mk === 'race' ? '' : 'none';
   // Zorluk seçimi
   const dr = $('diff-row'); dr.innerHTML = '';
   Object.keys(DIFFS).forEach(k => {
@@ -2122,9 +2235,11 @@ function renderMenu() {
     b.onclick = () => { sfx.init(); sfx.playClick(); selLevel = Math.min(save.unlocked - 1, first + 3); if (LEVELS[selLevel].map !== m) selLevel = first; save.lastLevel = selLevel; persist(); renderMenu(); buildWorld(m); };
     mt.appendChild(b);
   });
-  $('map-desc').textContent = MAP_INFO[selMap].desc;
+  $('map-desc').textContent = mk === 'campaign' || mk === 'race' ? MAP_INFO[selMap].desc : '';
   const el = $('levels'); el.innerHTML = '';
-  LEVELS.forEach((L, i) => {
+  el.classList.toggle('single', mk !== 'campaign');
+  if (mk !== 'campaign') renderModeCard();
+  else LEVELS.forEach((L, i) => {
     if (L.map !== selMap) return;
     const b = document.createElement('button'); b.className = 'lvl' + (i === selLevel ? ' sel' : '') + (L.boss ? ' boss' : '');
     const st = save.stars[i] || 0, locked = i >= save.unlocked;
@@ -2134,9 +2249,9 @@ function renderMenu() {
     el.appendChild(b);
   });
   const L = LEVELS[selLevel];
-  $('start-btn').textContent = `🎯 ${MAPS[L.map]} · ${L.boss ? 'Kral Bukalemun' : 'Bölüm ' + (L.k + 1)} - Başlat`;
+  $('start-btn').textContent = mk === 'campaign' ? `🎯 ${MAPS[L.map]} · ${L.boss ? 'Kral Bukalemun' : 'Bölüm ' + (L.k + 1)} - Başlat` : mk === 'race' ? `⏱️ ${MAPS[L.map]} · Zaman Yarışı - Başlat` : mk === 'endless' ? '♾️ Sonsuz Mod - Başlat' : `📅 Günlük Meydan Okuma - Başlat`;
   $('menu-gold').textContent = `💰 ${save.gold}`;
-  $('menu-stats').innerHTML = `⭐ ${totalStars()}/${LEVELS.length * 3} yıldız · 🦎 ${save.totalFound || 0} bukalemun yakalandı · 🎮 ${save.games || 0} oyun`;
+  $('menu-stats').innerHTML = `⭐ ${totalStars()}/${LEVELS.length * 3} yıldız · 🏅 ${Object.keys(save.ach).length}/${ACHS.length} başarım · 🦎 ${save.totalFound || 0} bukalemun · 🎮 ${save.games || 0} oyun`;
 }
 function openMenu() {
   gameState = 'MENU'; isPaused = false;
@@ -2168,7 +2283,7 @@ function refundAll() {
 }
 function renderSettings() {
   const s = save.settings;
-  $('set-sens').value = s.sens; $('set-fov').value = s.fov; $('set-sfx').value = s.sfx; $('set-music').value = s.music;
+  $('set-name').value = s.name || 'Avcı'; $('set-sens').value = s.sens; $('set-fov').value = s.fov; $('set-sfx').value = s.sfx; $('set-music').value = s.music;
   $('set-invert').textContent = s.invert ? 'Açık' : 'Kapalı';
   $('set-quality').textContent = s.quality === 'high' ? 'Yüksek' : 'Düşük (hızlı)';
 }
@@ -2184,29 +2299,40 @@ function applyQuality() {
  ********************************************************************/
 function clearHiders() { hiders.forEach(h => h.dispose()); hiders = []; decoys.forEach(h => h.dispose()); decoys = []; kingRef = null; }
 function startLevel(i) {
+  mode = 'campaign'; levelIdx = i; selLevel = i; save.lastLevel = i; persist();
+  setupRound(LEVELS[i], {});
+}
+function setupRound(L, o) {
   sfx.init(); Music.start();
-  levelIdx = i; level = LEVELS[i]; selLevel = i; save.lastLevel = i; persist();
+  const keep = !!o.keep;
+  level = L;
   buildWorld(level.map);
+  if (L.seed) RNG = mulberry32(L.seed);
   clearHiders();
   lasers.forEach(l => { scene.remove(l.g); l.m1.dispose(); l.m2.dispose(); }); lasers = [];
   pulses.forEach(p => { scene.remove(p.m); p.m.geometry.dispose(); p.m.material.dispose(); }); pulses = [];
   popups = []; confetti = [];
 
   const D = diff();
-  maxAmmo = Math.max(6, BASE_AMMO + 2 * upg('ammo') + D.mag); currentAmmo = maxAmmo;
-  reserveAmmo = D.reserve === Infinity ? Infinity : maxAmmo * (D.reserve + upg('reserve'));
+  maxAmmo = Math.max(6, BASE_AMMO + 2 * upg('ammo') + D.mag - (hasMod('lowammo') ? 3 : 0)); currentAmmo = maxAmmo;
+  if (!keep) reserveAmmo = D.reserve === Infinity ? Infinity : maxAmmo * (D.reserve + upg('reserve'));
+  else if (reserveAmmo !== Infinity) reserveAmmo += maxAmmo;
   lockMax = (BASE_LOCK - 0.8 * upg('cool')) * D.lock;
   inkTimer = stunTimer = 0; $('ink-fx').style.opacity = 0;
   projectiles.forEach(p => { scene.remove(p.m); p.m.material.dispose(); }); projectiles = [];
-  Object.assign(stats, { misses: 0, decoyHits: 0, caught: {}, orbs: 0, inked: 0, gadgets: 0 });
-  migrateMarks = D.migrate >= 2 ? [0.3, 0.65] : D.migrate >= 1 && (levelIdx >= 4) ? [0.55] : [];
-  scanTime = BASE_SCAN_TIME + 0.6 * upg('scanlen'); scanCd = BASE_SCAN_CD - 3 * upg('scancd');
-  levelTime = Math.round(level.time * D.time) + 10 * upg('time');
-  flashlight.distance = 48 * (1 + 0.12 * upg('light')); flashlight.angle = Math.min(1.0, Math.PI / 4.2 * (1 + 0.12 * upg('light')));
-  prepTimer = PREP_DURATION; searchTimer = levelTime; prepFast = false;
-  weaponLockTimer = 0; reloadTimer = 0; totalShotsFired = 0; totalShotsHit = 0;
+  if (!keep) Object.assign(stats, { misses: 0, decoyHits: 0, caught: {}, orbs: 0, inked: 0, gadgets: 0, decoysMax: 0 });
+  migrateMarks = mode === 'race' ? [] : D.migrate >= 2 ? [0.3, 0.65] : D.migrate >= 1 && (mode !== 'campaign' || levelIdx >= 4) ? [0.55] : [];
+  scanTime = BASE_SCAN_TIME + 0.6 * upg('scanlen'); scanCd = (BASE_SCAN_CD - 3 * upg('scancd')) * (hasMod('noscan') ? 2 : 1);
+  flashlight.distance = 48 * (1 + 0.12 * upg('light')) * (hasMod('dark') ? 0.65 : 1); flashlight.angle = Math.min(1.0, Math.PI / 4.2 * (1 + 0.12 * upg('light')));
+  if (mode === 'race') { levelTime = searchTimer = 600; }
+  else if (mode === 'endless') { if (keep) searchTimer += 25; else searchTimer = Math.round(120 * D.time) + 10 * upg('time'); levelTime = Math.max(searchTimer, 60); }
+  else { levelTime = Math.round(level.time * D.time) + 10 * upg('time'); searchTimer = levelTime; }
+  prepTimer = keep ? 6 : PREP_DURATION; prepFast = false;
+  weaponLockTimer = 0; reloadTimer = 0;
   scanActiveTimer = 0; scanCooldownTimer = 0; isScanMode = false;
-  score = 0; combo = 0; comboTimer = 0; bestCombo = 0; giggleCooldown = 4;
+  if (!keep) { score = 0; bestCombo = 0; totalShotsFired = 0; totalShotsHit = 0; }
+  combo = 0; comboTimer = 0; giggleCooldown = 4;
+  if (!keep) resetGadgets(); else { setThermal(false); thermalT = 0; GADGETS.forEach(g => { if (wave % 2 === 1) gadgetCharges[g.id]++; }); }
   Object.keys(buffs).forEach(k => buffs[k] = 0);
   setWeaponLocked(false);
   document.body.classList.remove('scan-active', 'weapon-locked', 'freeze-active');
@@ -2219,22 +2345,24 @@ function startLevel(i) {
   const types = [];
   level.mix.forEach((n, t) => { for (let k = 0; k < n; k++) types.push(t); });
   if (level.boss) types.push(6);
-  for (let k = types.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [types[k], types[j]] = [types[j], types[k]]; }
+  for (let k = types.length - 1; k > 0; k--) { const j = Math.floor(RNG() * (k + 1)); [types[k], types[j]] = [types[j], types[k]]; }
   totalHiders = remainingHiders = types.length;
   types.forEach((t, idx) => hiders.push(new HiderAI(idx, t, sp)));
   kingRef = hiders.find(h => h.isKing) || null;
   for (let k = 0; k < Math.round((level.decoys || 0) * D.decoy); k++) spawnDecoy();
+  stats.decoysMax = Math.max(stats.decoysMax || 0, decoys.length);
   spawnOrbs();
+  RNG = Math.random;
 
   SCREENS.forEach(s => $(s).classList.add('hidden'));
   $('blindfold-screen').classList.remove('hidden');
   $('hud').classList.remove('hidden'); $('crosshair').classList.remove('hidden');
   $('touch-ui').classList.toggle('hidden', !isTouch);
-  $('prep-level-text').innerHTML = `${MAPS[level.map]} · ${level.boss ? '👑 Kral Bukalemun' : 'Bölüm ' + (level.k + 1)} · ${D.ico} ${D.name}<br>${mixHtml(level)}` + (decoys.length ? `<br>🪤 ${decoys.length} sahte bukalemun var: vurma!` : '');
+  $('prep-level-text').innerHTML = `${MAPS[level.map]} · ${modeLabel()} · ${D.ico} ${D.name}<br>${mixHtml(level)}` + (decoys.length ? `<br>🪤 ${decoys.length} sahte bukalemun var: vurma!` : '') + (level.mods ? '<br>' + level.mods.map(m => `${m.ico} ${m.name}`).join(' · ') : '');
   $('skip-hint').innerHTML = isTouch ? '(Hızlandırmak için ekrana dokun)' : '(Hızlandırmak için <kbd>Boşluk</kbd>)';
   gameState = 'PREP'; isPaused = false;
-  save.games = (save.games || 0) + 1; persist();
-  showToast(`Bölüm ${i + 1} · ${level.tag}`);
+  if (!keep) { save.games = (save.games || 0) + 1; persist(); }
+  showToast(mode === 'campaign' ? `Bölüm ${levelIdx + 1} · ${level.tag}` : level.tag);
   updateHUD();
   requestGamePointerLock();
 }
@@ -2247,7 +2375,7 @@ function beginHunt() {
   // Hazırlık bitti: henüz saklanamayanlar hemen yerlerine ışınlanır ve kamufle olur
   hiders.forEach(h => { if (h.state === 'MOVING') { h.group.position.copy(h.targetPoint); h.baseY = h.targetPoint.y; h.curWp = h.targetWp; h.path = []; } });
 }
-function onAllCaught() { finishGame(true); }
+function onAllCaught() { if (mode === 'endless') nextWave(); else finishGame(true); }
 function runMigration() {
   const list = hiders.filter(h => h.alive && h.state === 'HIDING');
   const n = Math.max(1, Math.round(list.length * 0.35));
@@ -2256,6 +2384,8 @@ function runMigration() {
 }
 function finishGame(won) {
   if (gameState === 'GAMEOVER') return;
+  if (mode === 'endless') won = false;
+  setThermal(false);
   gameState = 'GAMEOVER';
   isScanMode = false; document.body.classList.remove('scan-active', 'weapon-locked', 'freeze-active');
   exitLock();
@@ -2264,28 +2394,58 @@ function finishGame(won) {
   const acc = totalShotsFired > 0 ? totalShotsHit / totalShotsFired : 0;
   let stars = 0;
   const D = diff();
-  if (won) { stars = 1; if (searchTimer >= levelTime * 0.4) stars++; if (acc >= 0.7) stars++; score += Math.ceil(searchTimer) * 2; }
+  const elapsed = levelTime - searchTimer;
+  if (won && mode === 'race') { stars = 1 + (elapsed < 150 ? 1 : 0) + (elapsed < 90 ? 1 : 0); score += Math.max(0, Math.round((600 - elapsed) * 5)); }
+  else if (won) { stars = 1; if (searchTimer >= levelTime * 0.4) stars++; if (acc >= 0.7) stars++; score += Math.ceil(searchTimer) * 2; }
+  if (mode === 'endless') { stars = wave >= 10 ? 3 : wave >= 5 ? 2 : wave >= 2 ? 1 : 0; }
   score = Math.round(score * D.score);
-  const gold = Math.round((Math.floor(score / 12) + (won ? 20 + 10 * stars : 5) + (won && level.boss ? 60 : 0)) * D.gold * (1 + 0.15 * upg('goldx')));
+  let gold = Math.round((Math.floor(score / 12) + (won ? 20 + 10 * stars : 5) + (won && level.boss ? 60 : 0) + (mode === 'endless' ? (wave - 1) * 15 : 0)) * D.gold * (1 + 0.15 * upg('goldx')) * (hasMod('gold') ? 2 : 1));
+  let bestLine = '', rank = 0;
+  if (mode === 'campaign') {
+    const prevBest = save.best[levelIdx] || 0;
+    if (score > prevBest) { save.best[levelIdx] = score; bestLine = `🎉 Yeni rekor! (Bölüm ${levelIdx + 1})`; } else bestLine = `Bölüm rekoru: ${prevBest}`;
+    if (won) { save.stars[levelIdx] = Math.max(save.stars[levelIdx] || 0, stars); if (levelIdx + 1 >= save.unlocked) save.unlocked = Math.min(LEVELS.length, levelIdx + 2); }
+    if (score > 0) rank = addLB('campaign', { v: score, lvl: `${MAP_INFO[level.map].ico} ${level.boss ? '👑' : 'B' + (level.k + 1)}` });
+  } else if (mode === 'endless') {
+    save.endlessBest = Math.max(save.endlessBest || 0, wave);
+    rank = addLB('endless', { v: score, wave });
+    bestLine = `🌊 ${wave}. dalgaya ulaştın · En iyi: ${save.endlessBest}. dalga`;
+  } else if (mode === 'race') {
+    if (won) { rank = addLB('race' + level.map, { v: Math.round(elapsed * 10) / 10 }, true); const b = save.lb['race' + level.map][0].v; bestLine = `⏱️ Süren: ${formatTime2(elapsed)} · Harita rekoru: ${formatTime2(b)}`; if (elapsed < 90) unlockAch('race90'); }
+    else bestLine = '⏱️ 10 dakika doldu!';
+  } else if (mode === 'daily') {
+    const prev = save.daily[level.seed] || 0;
+    if (won && !prev) { gold += 150; bestLine = '🎁 Günlük ilk tamamlama bonusu +150 altın! '; }
+    if (won) { save.daily[level.seed] = Math.max(prev, score); unlockAch('daily'); }
+    rank = addLB('daily' + level.seed, { v: score });
+    bestLine += `Bugünkü en iyi: ${save.daily[level.seed] || 0}`;
+  }
+  if (won) {
+    if (totalShotsFired >= 5 && totalShotsHit === totalShotsFired) unlockAch('perfect');
+    if ((stats.decoysMax || 0) >= 3 && !stats.decoyHits) unlockAch('nodecoy');
+    if (level.map === 3) unlockAch('nightowl');
+    if (diffKey() === 'kabus') unlockAch('kabus');
+  }
+  if (totalStars() >= 50) unlockAch('stars50');
+  if (rank) bestLine += ` · 🏆 Rekor tablosunda ${rank}. sıra!`;
   save.gold += gold;
-  const prevBest = save.best[levelIdx] || 0, newBest = score > prevBest;
-  if (newBest) save.best[levelIdx] = score;
-  if (won) { save.stars[levelIdx] = Math.max(save.stars[levelIdx] || 0, stars); if (levelIdx + 1 >= save.unlocked) save.unlocked = Math.min(LEVELS.length, levelIdx + 2); }
   persist();
 
   const wb = $('winner-badge');
   if (won) { wb.textContent = '🏆 ARAYAN KAZANDI!'; wb.style.color = '#34d399'; $('gameover-reason').textContent = `Muhteşem gözlem! ${totalHiders} bukalemunun hepsini süre dolmadan yakaladın.` + (bestCombo > 2 ? ` En iyi kombo: x${bestCombo}!` : ''); sfx.playWin(); addConfetti(160); }
+  else if (mode === 'endless') { wb.textContent = `🌊 DALGA ${wave}`; wb.style.color = '#38bdf8'; $('gameover-reason').textContent = `Süre doldu! ${wave - 1} dalga temizledin, toplam ${score} puan.`; sfx.playLose(); if (wave > 3) addConfetti(80); }
   else { wb.textContent = '🦎 SAKLANANLAR KAZANDI!'; wb.style.color = '#fb7185'; $('gameover-reason').textContent = `Süre doldu! ${remainingHiders} bukalemun kamufle olarak senden kurtulmayı başardı.`; sfx.playLose(); }
   $('stars').innerHTML = [0, 1, 2].map(k => `<span class="${k < stars ? 'on' : ''}" style="animation-delay:${0.25 + k * 0.25}s">★</span>`).join('');
-  $('stat-found').textContent = `${totalHiders - remainingHiders} / ${totalHiders}`;
-  $('stat-time').textContent = formatTime(searchTimer);
+  $('stat-found').textContent = mode === 'endless' ? `${Object.values(stats.caught).reduce((x, y) => x + y, 0)} 🦎` : `${totalHiders - remainingHiders} / ${totalHiders}`;
+  $('stat-time').textContent = mode === 'race' ? formatTime2(elapsed) : formatTime(searchTimer);
+  $('stat-time-l').textContent = mode === 'race' ? 'Süre' : 'Kalan Süre';
   $('stat-shots').textContent = `%${Math.round(acc * 100)}`;
   $('stat-score').textContent = score;
   $('result-gold').innerHTML = `💰 +<span class="gold">${gold}</span> altın kazandın (Toplam: ${save.gold})`;
-  $('result-best').textContent = newBest ? `🎉 Yeni rekor! (Bölüm ${levelIdx + 1})` : `Bölüm rekoru: ${prevBest}`;
-  const hasNext = won && levelIdx < LEVELS.length - 1;
+  $('result-best').textContent = bestLine;
+  const hasNext = mode === 'campaign' && won && levelIdx < LEVELS.length - 1;
   $('next-btn').classList.toggle('hidden', !hasNext);
-  if (won && levelIdx === LEVELS.length - 1) $('gameover-reason').textContent += ' 🎊 Tüm bölümleri bitirdin, gerçek bir bukalemun avcısısın!';
+  if (mode === 'campaign' && won && levelIdx === LEVELS.length - 1) $('gameover-reason').textContent += ' 🎊 Tüm bölümleri bitirdin, gerçek bir bukalemun avcısısın!';
   screenBack = 'result-screen';
   setTimeout(() => { if (gameState === 'GAMEOVER') showScreen('result-screen'); }, won ? 900 : 300);
 }
@@ -2301,6 +2461,344 @@ function resumeGame() {
   isPaused = false; SCREENS.forEach(s => $(s).classList.add('hidden'));
   clock.getDelta();
   requestGamePointerLock();
+}
+/********************************************************************
+ * 15. OYUN MODLARI: KAMPANYA, SONSUZ, ZAMAN YARIŞI, GÜNLÜK
+ ********************************************************************/
+const MODES = {
+  campaign: { ico: '🗺️', name: 'Kampanya', desc: '7 harita, 28 bölüm, her haritanın sonunda Kral Bukalemun.' },
+  endless: { ico: '♾️', name: 'Sonsuz', desc: 'Dalga dalga gelen bukalemunlar! Her yakalama +5 sn, her dalga +25 sn. Her 3 dalgada harita değişir, her 5. dalgada Kral gelir. Süre biterse oyun biter.' },
+  race: { ico: '⏱️', name: 'Zaman Yarışı', desc: 'Seçtiğin haritada 8 bukalemunu olabildiğince hızlı yakala. Süre ileri sayar, her ıska +5 sn ceza.' },
+  daily: { ico: '📅', name: 'Günlük', desc: 'Herkes için aynı tohumlu harita, aynı bukalemunlar ve 2 rastgele kural. Her gün yenilenir!' },
+};
+const modeKey = () => MODES[save.settings.mode] ? save.settings.mode : 'campaign';
+let mode = 'campaign', wave = 0, roundStartTime = 0, raceMap = 0;
+const DAILY_MODS = [
+  { id: 'dark', ico: '🌑', name: 'Zifiri Karanlık', desc: 'Fener menzili -35%' },
+  { id: 'skittish', ico: '💨', name: 'Ürkek Sürü', desc: 'Bukalemunlar fenerden çok daha çabuk kaçar' },
+  { id: 'lowammo', ico: '🪫', name: 'Kısıtlı Batarya', desc: 'Şarjör -3 mermi' },
+  { id: 'decoys', ico: '🪤', name: 'Tuzak Cenneti', desc: '+3 sahte bukalemun' },
+  { id: 'king', ico: '👑', name: 'Kral Ziyareti', desc: 'Kral Bukalemun da saklanıyor' },
+  { id: 'gold', ico: '💰', name: 'Altın Yağmuru', desc: 'Altın x2' },
+  { id: 'glass', ico: '🔪', name: 'Cam Top', desc: 'Her ıska -6 sn' },
+  { id: 'noscan', ico: '📵', name: 'Tarama Arızası', desc: 'Tarama bekleme süresi x2' },
+];
+function todaySeed() { const d = new Date(); return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate(); }
+function dailyLevel(seed) {
+  seed = seed || todaySeed();
+  const r = mulberry32(seed * 7919), map = Math.floor(r() * MAPS.length), pool = DAILY_MODS.slice(), mods = [];
+  for (let k = 0; k < 2; k++) mods.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
+  const has = id => mods.some(m => m.id === id), n = 8 + Math.floor(r() * 4);
+  return { map, k: 0, mix: mixFor(n, 12, 0.55), decoys: 2 + (has('decoys') ? 3 : 0), time: 200, flee: 0.8, boss: has('king'), alarmMul: has('skittish') ? 2 : 1, tag: '📅 Günlük Meydan Okuma', seed, mods, daily: true };
+}
+function endlessLevel(w) {
+  const t = Math.min(12, Math.floor(w * 1.4)), n = Math.min(12, 3 + w);
+  return { map: Math.floor((w - 1) / 3) % MAPS.length, k: 0, mix: mixFor(n, t, Math.min(0.75, 0.1 + w * 0.05)), decoys: Math.min(5, Math.floor(w / 2)), time: 120, flee: Math.min(1, w * 0.08), boss: w % 5 === 0, tag: `♾️ Dalga ${w}`, endless: true };
+}
+function raceLevel(m) { return { map: m, k: 0, mix: mixFor(8, m * 3 + 2, 0.4), decoys: 2, time: 600, flee: 0.5, tag: '⏱️ Zaman Yarışı', race: true }; }
+const hasMod = id => !!(level && level.mods && level.mods.some(m => m.id === id));
+function startMode(k) {
+  if (k === 'campaign') return startLevel(selLevel);
+  mode = k;
+  if (k === 'endless') { wave = 1; setupRound(endlessLevel(1), {}); }
+  else if (k === 'race') { raceMap = LEVELS[selLevel].map; setupRound(raceLevel(raceMap), {}); }
+  else if (k === 'daily') setupRound(dailyLevel(), {});
+}
+function restartCurrent() { if (mode === 'campaign') startLevel(levelIdx); else startMode(mode); }
+function nextWave() {
+  wave++;
+  const prevMap = level.map;
+  addConfetti(60); sfx.playWin();
+  showToast(`🌊 Dalga ${wave - 1} temizlendi! +25 sn`, 'emerald');
+  if (wave >= 5) unlockAch('wave5'); if (wave >= 10) unlockAch('wave10');
+  setTimeout(() => {
+    if (gameState !== 'PLAYING' && gameState !== 'WAVE') return;
+    const L = endlessLevel(wave);
+    setupRound(L, { keep: true });
+    if (L.map !== prevMap) showToast(`🗺️ Yeni harita: ${MAPS[L.map]}!`, 'cyan');
+  }, 1400);
+  gameState = 'WAVE';
+}
+function modeLabel() {
+  if (mode === 'endless') return `♾️ Dalga ${wave}`;
+  if (mode === 'race') return `⏱️ Zaman Yarışı`;
+  if (mode === 'daily') return `📅 Günlük #${level.seed}`;
+  return level.boss ? '👑 Kral Bukalemun' : 'Bölüm ' + (level.k + 1);
+}
+// Her yakalamada çağrılır
+function onCatch(h) {
+  if (mode === 'endless') { searchTimer += 5; addPopup('+5 sn', null, 0, '#4ade80', 1.1, 26); }
+  unlockAch('first');
+  if (h.isKing) { unlockAch('king'); save.kings = (save.kings || 0) + 1; save.kingMaps = save.kingMaps || {}; save.kingMaps[level.map] = 1; if (Object.keys(save.kingMaps).length >= MAPS.length) unlockAch('kings7'); }
+  if (h.baseY > 3) unlockAch('vertical');
+  if (h.paintT > 0) unlockAch('paintcatch');
+  if (combo >= 5) unlockAch('combo5');
+  if ((save.totalFound || 0) >= 100) unlockAch('hunter100');
+}
+
+/********************************************************************
+ * 16. ALETLER: TERMAL GÖZLÜK, SONAR BOMBASI, BOYA BOMBASI
+ ********************************************************************/
+const GADGETS = [
+  { id: 'thermal', ico: '🌡️', name: 'Termal Gözlük', key: '1', desc: 'Birkaç saniye her şeyi termal görürsün: bukalemunlar sıcak (turuncu), sahteler soğuk (mavi).' },
+  { id: 'sonar', ico: '📯', name: 'Sonar Bombası', key: '2', desc: 'Fırlat: düştüğü yerin 14 m çevresindeki bukalemunları 6 sn işaretler, sahteleri ele verir.' },
+  { id: 'paint', ico: '🎨', name: 'Boya Bombası', key: '3', desc: 'Fırlat: 7 m içindeki bukalemunları pembeye boyar (12 sn), sahteleri griye.' },
+];
+let gadgetCharges = { thermal: 1, sonar: 1, paint: 1 }, thermalT = 0, throwables = [], rings = [];
+const BOMB_GEO = new THREE.IcosahedronGeometry(0.22, 1);
+const THERMAL_MAT = new THREE.MeshLambertMaterial({ color: 0x1d2b6b, emissive: 0x070d2b });
+function resetGadgets() {
+  const n = 1 + upg('gadget') + (diffKey() === 'kolay' ? 1 : 0);
+  gadgetCharges = { thermal: n, sonar: n, paint: n };
+  setThermal(false); thermalT = 0;
+  throwables.forEach(b => { scene.remove(b.m); b.m.material.dispose(); }); throwables = [];
+  rings.forEach(r => { scene.remove(r.m); r.m.material.dispose(); }); rings = [];
+}
+function setThermal(on) { thermalOn = on; document.body.classList.toggle('thermal-active', on); }
+function useGadget(id) {
+  if (gameState !== 'PLAYING' || isPaused) return;
+  if (stunTimer > 0) { sfx.playLockError(); return; }
+  if (!gadgetCharges[id]) { sfx.playLockError(); showToast(`${GADGETS.find(g => g.id === id).ico} Şarj kalmadı! Turuncu alet küresi bul.`, 'rose'); return; }
+  if (id === 'thermal' && thermalOn) return;
+  gadgetCharges[id]--; stats.gadgets++; save.gadgetsUsed = (save.gadgetsUsed || 0) + 1;
+  if (save.gadgetsUsed >= 25) unlockAch('gadgets');
+  if (id === 'thermal') {
+    thermalT = 4 + 1.5 * upg('thermal'); setThermal(true); sfx.playScanActivate();
+    showToast('🌡️ Termal gözlük açık! Sıcak = bukalemun, soğuk = sahte', 'cyan');
+  } else throwBomb(id);
+}
+function throwBomb(kind) {
+  const dir = new THREE.Vector3(); camera.getWorldDirection(dir);
+  const pos = camera.position.clone().addScaledVector(dir, 0.7); pos.y -= 0.2;
+  const vel = dir.multiplyScalar(17); vel.y += 4.5;
+  const col = kind === 'sonar' ? 0x22d3ee : 0xff00e6;
+  const m = new THREE.Mesh(BOMB_GEO, new THREE.MeshBasicMaterial({ color: col }));
+  m.position.copy(pos); scene.add(m);
+  throwables.push({ kind, m, vel, t: 0, col });
+  sfx.playReload(); weaponGroup.recoil = 0.6;
+}
+const _bdir = new THREE.Vector3();
+function updateThrowables(dt) {
+  for (let i = throwables.length - 1; i >= 0; i--) {
+    const b = throwables[i]; b.t += dt; b.vel.y -= 22 * dt;
+    _bdir.copy(b.vel).multiplyScalar(dt);
+    const len = _bdir.length();
+    _ray.set(b.m.position, _bdir.normalize()); _ray.far = len + 0.2;
+    const hit = _ray.intersectObjects(camoTargets, false)[0]; _ray.far = Infinity;
+    let at = null;
+    if (hit) at = hit.point.clone().addScaledVector(_bdir, -0.2);
+    else { b.m.position.addScaledVector(b.vel, dt); b.m.rotation.x += dt * 8; if (b.m.position.y <= 0.2 || b.t > 3) at = b.m.position.clone(); }
+    if (b.t % 0.05 < dt) spawnBurst(b.m.position, 1, _pc.set(b.col), 0.5, 0, 0.6);
+    if (at) { scene.remove(b.m); b.m.material.dispose(); throwables.splice(i, 1); detonate(b.kind, at); }
+  }
+  for (let i = rings.length - 1; i >= 0; i--) {
+    const r = rings[i]; r.t += dt; const k = r.t / r.life;
+    r.m.scale.setScalar(0.5 + k * r.R); r.m.material.opacity = Math.max(0, 0.7 * (1 - k));
+    if (k >= 1) { scene.remove(r.m); r.m.material.dispose(); rings.splice(i, 1); }
+  }
+}
+const RING_GEO = new THREE.SphereGeometry(1, 24, 12);
+function addRing(p, R, col) {
+  const m = new THREE.Mesh(RING_GEO, new THREE.MeshBasicMaterial({ color: col, wireframe: true, transparent: true, opacity: 0.7, depthWrite: false }));
+  m.position.copy(p); scene.add(m); rings.push({ m, t: 0, life: 0.8, R });
+}
+function detonate(kind, p) {
+  const all = hiders.filter(h => h.alive), fakes = decoys.filter(d => d.alive);
+  const near = (h, R) => Math.hypot(h.group.position.x - p.x, h.group.position.z - p.z) < R && Math.abs(h.baseY - p.y) < 6;
+  if (kind === 'sonar') {
+    addRing(p, 14, 0x22d3ee); sfx.playScanActivate(); spawnBurst(p, 30, _pc.set(0x22d3ee), 6, 4);
+    const a = all.filter(h => near(h, 14)), b = fakes.filter(h => near(h, 14));
+    a.concat(b).forEach(h => { h.sonarT = 6; });
+    showToast(a.length || b.length ? `📯 Sonar: ${a.length} bukalemun${b.length ? `, ${b.length} sahte` : ''} tespit edildi!` : '📯 Sonar: bu bölgede kimse yok.', a.length ? 'cyan' : 'amber');
+  } else {
+    addRing(p, 7, 0xff00e6); sfx.playSplat(); spawnBurst(p, 70, _pc.set(0xff00e6), 9, 10, 1.3);
+    const a = all.filter(h => near(h, 7)), b = fakes.filter(h => near(h, 7));
+    a.concat(b).forEach(h => { h.paintT = 12; if (h.state === 'HIDING') h.bodyMaterial.color.setHex(h.isDecoy ? 0x6b7280 : 0xff00e6); });
+    showToast(a.length || b.length ? `🎨 Boya isabet! ${a.length} bukalemun pembe${b.length ? `, ${b.length} sahte gri` : ''}!` : '🎨 Boya kimseye değmedi.', a.length ? 'emerald' : 'amber');
+  }
+}
+function tickGadgets(dt) {
+  if (thermalT > 0) { thermalT -= dt; if (thermalT <= 0) { thermalT = 0; setThermal(false); } }
+  hiders.forEach(h => { if (h.sonarT > 0) h.sonarT -= dt; });
+  decoys.forEach(h => { if (h.sonarT > 0) h.sonarT -= dt; });
+}
+// Termal görünüm: 1. geçişte dünya soğuk mavi, 2. geçişte (katman 1) sadece bukalemunların sıcak ışıması
+function renderWorld() {
+  if (!thermalOn) { renderer.render(scene, camera); return; }
+  scene.overrideMaterial = THERMAL_MAT; renderer.render(scene, camera); scene.overrideMaterial = null;
+  const fog = scene.fog, bg = scene.background; scene.fog = null; scene.background = null; camera.layers.set(1);
+  renderer.render(scene, camera);
+  camera.layers.set(0); scene.fog = fog; scene.background = bg;
+}
+function drawGadgetFx() {
+  if (gameState !== 'PLAYING') return;
+  const list = hiders.concat(decoys).filter(h => h.alive && h.sonarT > 0);
+  list.forEach(h => {
+    _v1.copy(h.group.position); _v1.y = h.baseY + 2.6 * (h.baseScale || 1);
+    const s = project(_v1); if (s.behind) return;
+    fctx.globalAlpha = Math.min(1, h.sonarT);
+    fctx.font = '800 22px Fredoka,system-ui,sans-serif'; fctx.lineWidth = 4; fctx.strokeStyle = 'rgba(2,6,23,.85)';
+    const txt = h.isDecoy ? '🪤 SAHTE' : '📍', col = h.isDecoy ? '#f87171' : '#22d3ee';
+    fctx.strokeText(txt, s.x, s.y); fctx.fillStyle = col; fctx.fillText(txt, s.x, s.y);
+    fctx.font = '700 12px Fredoka,system-ui,sans-serif'; fctx.fillStyle = '#fff';
+    fctx.fillText(Math.round(h.group.position.distanceTo(player.pos)) + 'm', s.x, s.y + 18);
+  });
+  fctx.globalAlpha = 1;
+}
+function updateGadgetHUD() {
+  GADGETS.forEach(g => {
+    const el = $('g-' + g.id); if (!el) return;
+    const n = gadgetCharges[g.id] || 0;
+    el.querySelector('b').textContent = n;
+    el.classList.toggle('empty', !n); el.classList.toggle('on', g.id === 'thermal' && thermalOn);
+  });
+  setText('mode-text', mode === 'campaign' ? '' : modeLabel());
+}
+
+/********************************************************************
+ * 17. BAŞARIMLAR
+ ********************************************************************/
+const ACHS = [
+  { id: 'first', ico: '🦎', name: 'İlk Av', desc: 'İlk bukalemununu yakala', gold: 25 },
+  { id: 'combo5', ico: '🔥', name: 'Kombo Ustası', desc: 'x5 komboya ulaş', gold: 80 },
+  { id: 'king', ico: '👑', name: 'Kral Avcısı', desc: 'Bir Kral Bukalemun yakala', gold: 150, skin: 'altin' },
+  { id: 'kings7', ico: '🏆', name: 'Hanedan Yıkıcı', desc: '7 haritanın hepsinde Kral\'ı yen', gold: 600, skin: 'kral' },
+  { id: 'perfect', ico: '🎯', name: 'Keskin Nişancı', desc: 'En az 5 atışla %100 isabetle bir bölüm kazan', gold: 120 },
+  { id: 'nodecoy', ico: '🧠', name: 'Tuzağa Düşmeyen', desc: '3+ sahtenin olduğu bir bölümü hiç sahte vurmadan kazan', gold: 100 },
+  { id: 'nightowl', ico: '🦉', name: 'Gece Kuşu', desc: 'Gece Müzesi\'nde bir bölüm kazan', gold: 100, skin: 'gece' },
+  { id: 'vertical', ico: '🏗️', name: 'Yükseklik Korkusu Yok', desc: '3 m\'den yüksekte saklanan bir bukalemunu yakala', gold: 60 },
+  { id: 'kabus', ico: '💀', name: 'Kâbus Avcısı', desc: 'Kâbus zorluğunda bir bölüm kazan', gold: 250, skin: 'kabus' },
+  { id: 'wave5', ico: '🌊', name: 'Dalga Sörfçüsü', desc: 'Sonsuz modda 5. dalgaya ulaş', gold: 120 },
+  { id: 'wave10', ico: '♾️', name: 'Sonsuzluk', desc: 'Sonsuz modda 10. dalgaya ulaş', gold: 400, skin: 'galaksi' },
+  { id: 'race90', ico: '⚡', name: 'Şimşek', desc: 'Zaman yarışını 90 sn\'nin altında bitir', gold: 200 },
+  { id: 'daily', ico: '📅', name: 'Günlük Rutin', desc: 'Bir günlük meydan okumayı tamamla', gold: 150 },
+  { id: 'gadgets', ico: '🎒', name: 'Alet Delisi', desc: 'Toplam 25 alet kullan', gold: 120 },
+  { id: 'paintcatch', ico: '🎨', name: 'Boyacı', desc: 'Boyanmış bir bukalemunu yakala', gold: 50 },
+  { id: 'hunter100', ico: '🌈', name: 'Bukalemun Avcısı', desc: 'Toplam 100 bukalemun yakala', gold: 300, skin: 'bukalemun' },
+  { id: 'stars50', ico: '⭐', name: 'Yıldız Koleksiyoncusu', desc: 'Kampanyada 50 yıldız topla', gold: 300 },
+  { id: 'inked', ico: '🦑', name: 'Mürekkep Banyosu', desc: 'Toplam 10 kez mürekkep ye', gold: 40 },
+];
+let achQueue = [], achShowing = false;
+function unlockAch(id) {
+  if (save.ach[id]) return;
+  const a = ACHS.find(x => x.id === id); if (!a) return;
+  save.ach[id] = Date.now(); save.gold += a.gold;
+  if (a.skin && !save.skins.includes(a.skin)) save.skins.push(a.skin);
+  persist();
+  achQueue.push(a); showNextAch();
+}
+function showNextAch() {
+  if (achShowing || !achQueue.length) return;
+  const a = achQueue.shift(), el = $('ach-toast'); achShowing = true;
+  const sk = a.skin ? SKINS.find(s => s.id === a.skin) : null;
+  el.innerHTML = `<div class="ai">${a.ico}</div><div><div class="at">🏅 Başarım açıldı!</div><div class="an">${a.name}</div><div class="ad">+${a.gold} altın${sk ? ` · 🔫 ${sk.name} kaplaması` : ''}</div></div>`;
+  el.classList.add('show'); sfx.playCoin();
+  setTimeout(() => { el.classList.remove('show'); setTimeout(() => { achShowing = false; showNextAch(); }, 400); }, 3200);
+}
+function renderAch() {
+  const el = $('ach-list'); el.innerHTML = '';
+  ACHS.forEach(a => {
+    const got = !!save.ach[a.id], d = document.createElement('div');
+    d.className = 'ach' + (got ? ' got' : '');
+    d.innerHTML = `<div class="ai">${got ? a.ico : '🔒'}</div><div class="um"><div class="un">${a.name}</div><div class="ud">${a.desc}</div><div class="ud" style="color:#fde68a">💰 ${a.gold}${a.skin ? ' · 🔫 kaplama' : ''}</div></div>`;
+    el.appendChild(d);
+  });
+  $('ach-count').textContent = `${Object.keys(save.ach).length} / ${ACHS.length}`;
+}
+
+/********************************************************************
+ * 18. KOZMETİK: SİLAH KAPLAMALARI
+ ********************************************************************/
+const SKINS = [
+  { id: 'klasik', name: 'Klasik', body: 0x1e293b, core: 0x00f2fe, emi: 0x00c6ff, beam: 0x10b981, cost: 0 },
+  { id: 'neon', name: 'Neon Pembe', body: 0x2e1065, core: 0xff4fd8, emi: 0xff00c8, beam: 0xf472b6, cost: 300 },
+  { id: 'buz', name: 'Buz Kristali', body: 0xcbd5e1, core: 0x7dd3fc, emi: 0x38bdf8, beam: 0x93c5fd, cost: 400 },
+  { id: 'lav', name: 'Lav', body: 0x1c1917, core: 0xff6a00, emi: 0xff3d00, beam: 0xfb923c, cost: 500 },
+  { id: 'zumrut', name: 'Zümrüt', body: 0x064e3b, core: 0x34d399, emi: 0x10b981, beam: 0x6ee7b7, cost: 650 },
+  { id: 'altin', name: 'Altın Kral', body: 0x78350f, core: 0xfacc15, emi: 0xf59e0b, beam: 0xfde047, ach: 'king' },
+  { id: 'gece', name: 'Gece Bekçisi', body: 0x111827, core: 0xa78bfa, emi: 0x7c3aed, beam: 0xc4b5fd, ach: 'nightowl' },
+  { id: 'kabus', name: 'Kâbus', body: 0x0a0a0a, core: 0xdc2626, emi: 0xb91c1c, beam: 0xef4444, ach: 'kabus' },
+  { id: 'galaksi', name: 'Galaksi', body: 0x0f172a, core: 0x818cf8, emi: 0x6366f1, beam: 0xa5b4fc, ach: 'wave10', rainbow: 0.25 },
+  { id: 'bukalemun', name: 'Bukalemun', body: 0x14532d, core: 0x22c55e, emi: 0x16a34a, beam: 0x4ade80, ach: 'hunter100', rainbow: 1 },
+  { id: 'kral', name: 'Hanedan', body: 0xfef3c7, core: 0xfacc15, emi: 0xfbbf24, beam: 0xfacc15, ach: 'kings7', rainbow: 0.5 },
+];
+const curSkin = () => SKINS.find(s => s.id === save.skin && save.skins.includes(s.id)) || SKINS[0];
+function applySkin() {
+  const s = curSkin();
+  if (weaponGroup.bodyMat) weaponGroup.bodyMat.color.setHex(s.body);
+  weaponGroup.pips.forEach(p => p.material.color.setHex(s.core));
+  muzzleLight.color.setHex(s.core); worldFlash.color.setHex(s.core);
+  setWeaponLocked(weaponLockTimer > 0);
+}
+function skinTick(t) {
+  const s = curSkin(); if (!s.rainbow || weaponLockTimer > 0) return;
+  const m = weaponGroup.weaponCoreMat; m.color.setHSL((t * 0.15 * s.rainbow) % 1, 0.9, 0.6); m.emissive.copy(m.color).multiplyScalar(0.8);
+}
+function renderSkins() {
+  $('skin-gold').textContent = save.gold;
+  const el = $('skin-list'); el.innerHTML = '';
+  SKINS.forEach(s => {
+    const own = save.skins.includes(s.id), sel = curSkin().id === s.id, d = document.createElement('div');
+    d.className = 'up skin' + (sel ? ' sel' : '');
+    const hex = c => '#' + c.toString(16).padStart(6, '0');
+    const a = s.ach && ACHS.find(x => x.id === s.ach);
+    d.innerHTML = `<div class="sw" style="background:linear-gradient(135deg,${hex(s.body)} 0 45%,${hex(s.core)} 45% 70%,${hex(s.beam)} 70%)${s.rainbow ? ';animation:hue 3s linear infinite' : ''}"></div><div class="um"><div class="un">${s.name}</div><div class="ud">${own ? (sel ? '✅ Takılı' : 'Sahipsin') : a ? `🏅 ${a.name} başarımı ile açılır` : `💰 ${s.cost} altın`}</div></div>`;
+    const b = document.createElement('button'); b.className = 'btn small' + (own ? '' : ' indigo');
+    if (own) { b.textContent = sel ? 'Takılı' : 'Tak'; b.disabled = sel; b.onclick = () => { save.skin = s.id; persist(); applySkin(); sfx.playClick(); renderSkins(); }; }
+    else if (a) { b.textContent = '🔒'; b.disabled = true; }
+    else { b.textContent = `💰 ${s.cost}`; b.disabled = save.gold < s.cost; b.onclick = () => { if (save.gold < s.cost) return; save.gold -= s.cost; save.skins.push(s.id); save.skin = s.id; persist(); applySkin(); sfx.playCoin(); renderSkins(); }; }
+    d.appendChild(b); el.appendChild(d);
+  });
+}
+
+/********************************************************************
+ * 19. YEREL REKOR TABLOSU
+ ********************************************************************/
+function addLB(key, entry, asc) {
+  const list = save.lb[key] = save.lb[key] || [];
+  entry.name = (save.settings.name || 'Avcı').slice(0, 14); entry.diff = diffKey(); entry.at = Date.now();
+  list.push(entry); list.sort((a, b) => asc ? a.v - b.v : b.v - a.v);
+  const rank = list.indexOf(entry) + 1; save.lb[key] = list.slice(0, 10); persist();
+  return rank <= 10 ? rank : 0;
+}
+let lbTab = 'campaign';
+function renderLB() {
+  const tabs = $('lb-tabs'); tabs.innerHTML = '';
+  Object.keys(MODES).forEach(k => {
+    const b = document.createElement('button'); b.className = k === lbTab ? 'sel' : '';
+    b.textContent = `${MODES[k].ico} ${MODES[k].name}`; b.onclick = () => { lbTab = k; sfx.playClick(); renderLB(); };
+    tabs.appendChild(b);
+  });
+  const el = $('lb-list'); let html = '';
+  const row = (i, e, val, extra) => `<tr><td>${i + 1}</td><td>${esc(e.name)}</td><td>${val}</td><td>${extra || ''}</td><td>${DIFFS[e.diff] ? DIFFS[e.diff].ico : ''}</td><td class="dt">${new Date(e.at).toLocaleDateString('tr-TR')}</td></tr>`;
+  const table = (list, fmt, head) => list && list.length ? `<table><tr><th>#</th><th>İsim</th><th>${head}</th><th></th><th></th><th>Tarih</th></tr>${list.map((e, i) => fmt(i, e)).join('')}</table>` : '<p class="empty">Henüz rekor yok. Hadi ilkini sen yap!</p>';
+  if (lbTab === 'campaign') html = table(save.lb.campaign, (i, e) => row(i, e, e.v, e.lvl), 'Skor');
+  else if (lbTab === 'endless') html = `<p class="sub">En iyi dalga: <b>${save.endlessBest || 0}</b></p>` + table(save.lb.endless, (i, e) => row(i, e, e.v, `🌊 ${e.wave}`), 'Skor');
+  else if (lbTab === 'race') {
+    html = MAPS.map((n, m) => { const l = save.lb['race' + m]; return `<div class="lbm"><b>${MAP_INFO[m].ico} ${n}</b>${l && l.length ? l.slice(0, 3).map((e, i) => `<span>${['🥇', '🥈', '🥉'][i]} ${esc(e.name)} ${formatTime2(e.v)}</span>`).join('') : '<span class="empty">—</span>'}</div>`; }).join('');
+  } else {
+    const L = dailyLevel(), key = 'daily' + L.seed;
+    html = `<p class="sub">Bugün: ${MAP_INFO[L.map].ico} ${MAPS[L.map]} · ${L.mods.map(m => m.ico + ' ' + m.name).join(' · ')}</p>` + table(save.lb[key], (i, e) => row(i, e, e.v, ''), 'Skor');
+  }
+  el.innerHTML = html;
+}
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function formatTime2(sec) { const m = Math.floor(sec / 60), s = sec - m * 60; return `${String(m).padStart(2, '0')}:${s.toFixed(1).padStart(4, '0')}`; }
+
+// Menüde modlara göre seçim kartı
+function renderModeCard() {
+  const k = modeKey(), el = $('levels'); el.innerHTML = '';
+  const card = document.createElement('div'); card.className = 'mode-card';
+  if (k === 'endless') {
+    card.innerHTML = `<div class="mi">♾️</div><div><div class="lt">Sonsuz Hayatta Kalma</div><div class="ld">${MODES.endless.desc}</div><div class="ls2">🏅 En iyi dalga: <b>${save.endlessBest || 0}</b> · En iyi skor: <b>${(save.lb.endless && save.lb.endless[0] && save.lb.endless[0].v) || 0}</b></div></div>`;
+  } else if (k === 'race') {
+    const m = LEVELS[selLevel].map, l = save.lb['race' + m], best = l && l.length ? formatTime2(l[0].v) : '—';
+    card.innerHTML = `<div class="mi">⏱️</div><div><div class="lt">Zaman Yarışı · ${MAPS[m]}</div><div class="ld">${MODES.race.desc}</div><div class="ls2">🏅 Bu haritada en iyi süre: <b>${best}</b></div></div>`;
+  } else {
+    const L = dailyLevel(), done = save.daily[L.seed];
+    card.innerHTML = `<div class="mi">📅</div><div><div class="lt">Günlük Meydan Okuma #${L.seed}</div><div class="ld">${MAP_INFO[L.map].ico} <b>${MAPS[L.map]}</b> · ${mixHtml(L)}<br>${L.mods.map(m => `${m.ico} <b>${m.name}</b>: ${m.desc}`).join('<br>')}</div><div class="ls2">${done ? `✅ Bugünkü en iyi skorun: <b>${done}</b>` : '🎁 İlk tamamlayışta +150 altın bonus!'}</div></div>`;
+  }
+  el.appendChild(card);
 }
 /********************************************************************
  * 13. KONTROLLER: FARE (pointer lock + sürükle yedeği), KLAVYE, DOKUNMATİK
@@ -2360,13 +2858,16 @@ function setupInputListeners() {
       return;
     }
     if (!inGame()) {
-      if (e.code === 'Enter' && gameState === 'MENU' && !$('menu-screen').classList.contains('hidden')) startLevel(selLevel);
+      if (e.code === 'Enter' && gameState === 'MENU' && !$('menu-screen').classList.contains('hidden')) startMode(modeKey());
       return;
     }
     if (e.code === 'Space') { if (gameState === 'PREP') prepFast = true; else tryJump(); }
     else if (e.code === 'KeyQ') activateScanAbility();
     else if (e.code === 'KeyR') startReload();
     else if (e.code === 'KeyF' || e.code === 'Enter') fireLaserWeapon();
+    else if (e.code === 'Digit1' || e.code === 'Numpad1') useGadget('thermal');
+    else if (e.code === 'Digit2' || e.code === 'Numpad2') useGadget('sonar');
+    else if (e.code === 'Digit3' || e.code === 'Numpad3') useGadget('paint');
   });
   document.addEventListener('keyup', e => { if (keyMap[e.code]) moveKeys[keyMap[e.code]] = false; });
   window.addEventListener('blur', () => { Object.keys(moveKeys).forEach(k => moveKeys[k] = false); });
@@ -2385,6 +2886,8 @@ function setupInputListeners() {
   btn('t-jump', () => tryJump());
   btn('t-reload', () => startReload());
   btn('t-pause', () => pauseGame());
+  GADGETS.forEach(g => btn('g-' + g.id, () => useGadget(g.id)));
+  GADGETS.forEach(g => $('g-' + g.id).addEventListener('click', e => { e.stopPropagation(); if (!isTouch) useGadget(g.id); }));
   btn('t-run', () => { touchRun = !touchRun; $('t-run').classList.toggle('on', touchRun); });
   window.addEventListener('touchstart', e => {
     if (!inGame() || e.target.closest('.screen,button')) return;
@@ -2425,16 +2928,20 @@ function setupInputListeners() {
 
   // ---- Menü butonları ----
   const click = (id, fn) => $(id).addEventListener('click', () => { sfx.init(); sfx.playClick(); fn(); });
-  click('start-btn', () => startLevel(selLevel));
+  click('start-btn', () => startMode(modeKey()));
+  click('skins-btn', () => { screenBack = 'menu-screen'; renderSkins(); showScreen('skins-screen'); });
+  click('ach-btn', () => { screenBack = 'menu-screen'; renderAch(); showScreen('ach-screen'); });
+  click('lb-btn', () => { screenBack = 'menu-screen'; lbTab = modeKey(); renderLB(); showScreen('lb-screen'); });
+  click('result-lb-btn', () => { screenBack = 'result-screen'; lbTab = mode; renderLB(); showScreen('lb-screen'); });
   click('shop-btn', () => { screenBack = 'menu-screen'; renderShop(); showScreen('shop-screen'); });
   click('how-btn', () => { screenBack = 'menu-screen'; showScreen('how-screen'); });
   click('settings-btn', () => { screenBack = 'menu-screen'; renderSettings(); showScreen('settings-screen'); });
   click('pause-settings-btn', () => { screenBack = 'pause-overlay'; renderSettings(); showScreen('settings-screen'); });
   click('resume-btn', resumeGame);
-  click('restart-btn', () => startLevel(levelIdx));
+  click('restart-btn', restartCurrent);
   click('quit-btn', () => { exitLock(); openMenu(); });
   click('next-btn', () => startLevel(Math.min(LEVELS.length - 1, levelIdx + 1)));
-  click('retry-btn', () => startLevel(levelIdx));
+  click('retry-btn', restartCurrent);
   click('result-shop-btn', () => { screenBack = 'result-screen'; renderShop(); showScreen('shop-screen'); });
   click('result-menu-btn', openMenu);
   click('refund-btn', refundAll);
@@ -2449,6 +2956,7 @@ function setupInputListeners() {
   $('set-sfx').addEventListener('input', e => { s.sfx = +e.target.value; sfx.applyVolumes(); persist(); });
   $('set-sfx').addEventListener('change', () => sfx.playHitEliminate());
   $('set-music').addEventListener('input', e => { s.music = +e.target.value; sfx.applyVolumes(); persist(); });
+  $('set-name').addEventListener('input', e => { s.name = e.target.value.slice(0, 14) || 'Avcı'; persist(); });
   click('set-invert', () => { s.invert = !s.invert; persist(); renderSettings(); });
   click('set-quality', () => { s.quality = s.quality === 'high' ? 'low' : 'high'; persist(); renderSettings(); applyQuality(); });
 }
@@ -2482,6 +2990,7 @@ function tickTimers(dt) {
   if (reloadTimer > 0) { reloadTimer -= dt; if (reloadTimer <= 0) { reloadTimer = 0; finishReload(); } }
   if (inkTimer > 0) inkTimer = Math.max(0, inkTimer - dt);
   if (stunTimer > 0) stunTimer = Math.max(0, stunTimer - dt);
+  tickGadgets(dt);
   if (migrateMarks.length && 1 - searchTimer / levelTime >= migrateMarks[0]) { migrateMarks.shift(); runMigration(); }
   if (isScanMode) { scanActiveTimer -= dt; if (scanActiveTimer <= 0) { isScanMode = false; document.body.classList.remove('scan-active'); } }
   else if (scanCooldownTimer > 0) { scanCooldownTimer -= dt; if (scanCooldownTimer <= 0) { scanCooldownTimer = 0; sfx.playBeep(false); } }
@@ -2510,7 +3019,9 @@ function updateWorldFx(dt, t) {
     if (p.t > 0.9) { scene.remove(p.m); p.m.geometry.dispose(); p.m.material.dispose(); pulses.splice(i, 1); }
   }
   decoAnim.forEach(f => f(t));
-  updateProjectiles(dt);
+  updateProjectiles(buffs.slowmo > 0 ? dt * 0.5 : dt);
+  updateThrowables(dt);
+  skinTick(t);
   updateParticles(dt);
 }
 
@@ -2537,26 +3048,30 @@ function animate() {
       updatePlayer(dt);
       checkMapHazards(dt);
       applyCamera(dt, t);
-      hiders.forEach(h => h.update(dt, t));
-      decoys.forEach(h => h.update(dt, t));
+      const hdt = buffs.slowmo > 0 ? dt * 0.35 : dt;
+      hiders.forEach(h => h.update(hdt, t));
+      decoys.forEach(h => h.update(hdt, t));
     }
   }
   if (!isPaused) updateWorldFx(dt, t);
   hudT -= dt;
-  if ((gameState === 'PLAYING' || gameState === 'PREP') && hudT <= 0) { hudT = 0.05; updateHUD(); }
+  if ((gameState === 'PLAYING' || gameState === 'PREP' || gameState === 'WAVE') && hudT <= 0) { hudT = 0.05; updateHUD(); }
   const blind = gameState === 'PREP';
   if (scene.background) renderer.setClearColor(scene.background, 1);
   renderer.clear();
   if (!blind) {
-    renderer.render(scene, camera);
-    if (gameState === 'PLAYING' || gameState === 'GAMEOVER') { renderer.clearDepth(); renderer.render(weaponScene, weaponCam); }
+    renderWorld();
+    if (gameState === 'PLAYING' || gameState === 'WAVE' || gameState === 'GAMEOVER') { renderer.clearDepth(); renderer.render(weaponScene, weaponCam); }
   }
   drawFx(isPaused ? 0 : dt);
 }
 
 // Test ve hata ayıklama için küçük bir kanca
 window.__bukalemun = {
-  get state() { return { gameState, isPaused, levelIdx, prepTimer, searchTimer, remainingHiders, totalHiders, currentAmmo, maxAmmo, reserveAmmo: reserveAmmo === Infinity ? -1 : reserveAmmo, inkTimer, stunTimer, weaponLockTimer, score, combo, isScanMode, buffs: { ...buffs }, player: { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, pitch: player.pitch, stamina: player.stamina }, waypoints: hidingWaypoints.length, hiders: hiders.map(h => ({ alive: h.alive, type: h.type.id, state: h.state, y: h.baseY, camo: h.camoTransition, x: h.group.position.x, z: h.group.position.z })) }; },
+  get state() { return { mode, wave, gadgets: { ...gadgetCharges }, thermalOn, ach: Object.keys(save.ach), skin: save.skin, levelTime, sonar: hiders.filter(h => h.alive && h.sonarT > 0).length, painted: hiders.filter(h => h.alive && h.paintT > 0).length, decoySonar: decoys.filter(h => h.alive && h.sonarT > 0).length, gameState, isPaused, levelIdx, prepTimer, searchTimer, remainingHiders, totalHiders, currentAmmo, maxAmmo, reserveAmmo: reserveAmmo === Infinity ? -1 : reserveAmmo, inkTimer, stunTimer, weaponLockTimer, score, combo, isScanMode, buffs: { ...buffs }, player: { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, pitch: player.pitch, stamina: player.stamina }, waypoints: hidingWaypoints.length, hiders: hiders.map(h => ({ alive: h.alive, type: h.type.id, state: h.state, y: h.baseY, camo: h.camoTransition, x: h.group.position.x, z: h.group.position.z })) }; },
+  startMode, setMode(k) { save.settings.mode = k; persist(); renderMenu(); }, gadget: useGadget, unlockAch, renderLB, get save() { return save; },
+  catchAll() { hiders.filter(h => h.alive).forEach(h => { h.eliminate(); remainingHiders--; stats.caught[h.typeIdx] = (stats.caught[h.typeIdx] || 0) + 1; onCatch(h); }); if (gameState === 'PLAYING') onAllCaught(); },
+  setTimer(v) { searchTimer = v; },
   startLevel, fire: fireLaserWeapon, scan: activateScanAbility, jump: tryJump, pause: pauseGame, resume: resumeGame, menu: openMenu,
   skipPrep() { prepTimer = 0.01; },
   aimAt(i) {
@@ -2600,6 +3115,7 @@ window.__bukalemun = {
 window.addEventListener('load', () => {
   if (isTouch) { document.body.classList.add('touch'); if (!localStorage.getItem(SAVE_KEY)) save.settings.quality = 'low'; }
   initThreeScene();
+  applySkin();
   openMenu();
   animate();
 });
