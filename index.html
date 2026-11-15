@@ -944,8 +944,11 @@
                             // Çarpışma varsa yan yönden dolaş veya yeni hedef seç
                             const sideVec = new THREE.Vector3(-toTarget.z, 0, toTarget.x);
                             const altPos = this.group.position.clone().addScaledVector(sideVec, speed * dt);
+                            const altPos2 = this.group.position.clone().addScaledVector(sideVec, -speed * dt);
                             if (!checkSphereWallCollision(altPos, 0.55)) {
                                 this.group.position.copy(altPos);
+                            } else if (!checkSphereWallCollision(altPos2, 0.55)) {
+                                this.group.position.copy(altPos2);
                             } else {
                                 this.pickNewHidingSpot();
                             }
@@ -1077,9 +1080,10 @@
             activeLasers.push({ mesh: beamMesh, life: 0.18 });
         }
 
+        const SHARED_PARTICLE_GEO = new THREE.BoxGeometry(0.22, 0.22, 0.22);
         function spawnEliminationParticles(pos, baseColor) {
             for (let i = 0; i < 45; i++) {
-                const pGeo = new THREE.BoxGeometry(0.22, 0.22, 0.22);
+                const pGeo = SHARED_PARTICLE_GEO;
                 const pMat = new THREE.MeshBasicMaterial({
                     color: new THREE.Color().setHSL(Math.random(), 0.9, 0.6),
                     transparent: true,
@@ -1134,6 +1138,7 @@
 
             // Hem saklananların parçalarını hem de duvarları kontrol et (duvar arkasından vurulmasın)
             const hiderMeshes = [];
+            raycaster.far = 80;
             hiders.forEach(h => {
                 if (h.alive) {
                     hiderMeshes.push(h.torsoMesh, h.headMesh, h.crestMesh, h.leftFoot, h.rightFoot);
@@ -1474,7 +1479,8 @@
 
             window.addEventListener('mousemove', (e) => {
                 if (gameState !== 'PLAYING' || isPaused) return;
-                if (document.pointerLockElement !== document.getElementById('game-container')) return;
+                // Pointer Lock yoksa (iframe vb.) sol tık basılı sürükleyerek bakılabilir
+                if (document.pointerLockElement !== document.getElementById('game-container') && !(e.buttons & 1)) return;
 
                 const sensitivity = 0.0022;
                 yaw -= e.movementX * sensitivity;
@@ -1493,6 +1499,7 @@
 
             window.addEventListener('keydown', (e) => {
                 const code = e.code;
+                if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code)) e.preventDefault();
                 if (code === 'KeyW' || code === 'ArrowUp') moveKeys.w = true;
                 if (code === 'KeyS' || code === 'ArrowDown') moveKeys.s = true;
                 if (code === 'KeyA' || code === 'ArrowLeft') moveKeys.a = true;
@@ -1650,6 +1657,8 @@
                 activeLasers[i].mesh.material.opacity = Math.max(0, activeLasers[i].life / 0.18);
                 if (activeLasers[i].life <= 0) {
                     scene.remove(activeLasers[i].mesh);
+                    activeLasers[i].mesh.geometry.dispose();
+                    activeLasers[i].mesh.material.dispose();
                     activeLasers.splice(i, 1);
                 }
             }
@@ -1665,6 +1674,7 @@
                 p.mesh.material.opacity = Math.max(0, p.life / 0.8);
                 if (p.life <= 0) {
                     scene.remove(p.mesh);
+                    p.mesh.material.dispose();
                     hitParticles.splice(i, 1);
                 }
             }
