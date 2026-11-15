@@ -470,18 +470,37 @@ const BASE_SCAN_TIME = 3.0;
 const BASE_SCAN_CD = 20.0;
 const EYE_H = 2.3;
 
-const MAPS = ['Renkli Malikane', 'Sera Bahçesi', 'Oyuncak Fabrikası'];
-const LEVELS = [
-  { map: 0, mix: [6, 0, 0], time: 180, flee: 0.0, tag: 'Isınma turu' },
-  { map: 0, mix: [6, 2, 0], time: 180, flee: 0.4, tag: 'Kaçaklar geldi' },
-  { map: 0, mix: [5, 2, 2], time: 180, flee: 0.6, tag: 'Ustalar sahnede' },
-  { map: 1, mix: [6, 1, 0], time: 180, flee: 0.5, tag: 'Çiçek tarhları' },
-  { map: 1, mix: [5, 3, 1], time: 180, flee: 0.7, tag: 'Çit labirenti' },
-  { map: 1, mix: [4, 3, 3], time: 190, flee: 0.8, tag: 'Bahçe ustaları' },
-  { map: 2, mix: [5, 2, 1], time: 190, flee: 0.7, tag: 'Neon gece' },
-  { map: 2, mix: [4, 4, 2], time: 200, flee: 0.9, tag: 'Oyuncak kaosu' },
-  { map: 2, mix: [4, 4, 4], time: 210, flee: 1.0, tag: 'Büyük final' },
+const MAPS = ['Renkli Malikane', 'Sera Bahçesi', 'Oyuncak Fabrikası', 'Gece Müzesi', 'Pazar Yeri', 'Buz Sarayı', 'Şantiye Kulesi'];
+const MAP_INFO = [
+  { ico: '🏰', color: '#f59e0b', spawn: [0, 5.5], desc: 'Renkli odalar, halılar ve kutular' },
+  { ico: '🌻', color: '#84cc16', spawn: [0, 9], desc: 'Çit labirenti, çiçek tarhları, gölet' },
+  { ico: '🧸', color: '#ec4899', spawn: [0, 11], desc: 'Neon ışıklar, blok kalesi, konveyörler' },
+  { ico: '🏛️', color: '#a78bfa', spawn: [0, 30], desc: 'Zifiri karanlık! Fener hayati, lazer alarmlarına dikkat', dark: true },
+  { ico: '🧺', color: '#fb923c', spawn: [0, 6, Math.PI], desc: 'Gün ışığında rengârenk tezgâhlar ve halılar' },
+  { ico: '❄️', color: '#67e8f9', spawn: [5, 33], desc: 'Kaygan buz zemin ve neon kristaller', slippery: true },
+  { ico: '🏗️', color: '#fbbf24', spawn: [0, 16], desc: 'Çok katlı iskeleler: bukalemunlar duvara tırmanır!', vertical: true },
 ];
+const LEVEL_TAGS = [
+  ['Isınma turu', 'Kaçaklar geldi', 'Ustalar sahnede'],
+  ['Çiçek tarhları', 'Çit labirenti', 'Bahçe ustaları'],
+  ['Neon gece', 'Oyuncak kaosu', 'Blok ustaları'],
+  ['Gece bekçisi', 'Lazer koridorları', 'Kayıp sergi'],
+  ['Sabah pazarı', 'Halı tüccarları', 'Pazar kalabalığı'],
+  ['Buz pateni', 'Kristal mağara', 'Kutup gecesi'],
+  ['İskele turu', 'Yüksek irtifa', 'Vinç zirvesi'],
+];
+// Bölümler: harita başına 3 bölüm; zorluk her bölümde dikleşir
+const LEVELS = [];
+for (let m = 0; m < MAPS.length; m++) for (let k = 0; k < 3; k++) {
+  const t = m * 3 + k, n = Math.min(13, 5 + m + k);
+  const sp = Math.min(0.75, 0.12 + t * 0.035);
+  let special = Math.round(n * sp);
+  const mix = [0, 0, 0];
+  if (t >= 1) { mix[1] = Math.ceil(special * 0.6); special -= mix[1]; }
+  if (t >= 2) { mix[2] = special; special = 0; }
+  mix[1] += special; mix[0] = n - mix[1] - mix[2];
+  LEVELS.push({ map: m, k, mix, time: 200 - t * 5 + (n - 5) * 4, flee: Math.min(1, t * 0.06), tag: LEVEL_TAGS[m][k] });
+}
 const HIDER_TYPES = [
   { id: 'normal', name: 'Sıradan', color: 0xff7b00, pts: 100, camoTime: 2.0, shift: 0.065, alarm: 1.6, fleeSpeed: 8.5, rehide: 1 },
   { id: 'kacak', name: 'Kaçak', color: 0x3b82f6, pts: 150, camoTime: 1.8, shift: 0.06, alarm: 0.55, fleeSpeed: 10.5, rehide: 1.4 },
@@ -778,7 +797,7 @@ function hiderBlocked(x, z, r) {
   if (x < -38.5 || x > 38.5 || z < -38.5 || z > 38.5) return true;
   for (let i = 0; i < wallColliders.length; i++) {
     const b = wallColliders[i];
-    if (b.max.y < 0.3) continue;
+    if (b.max.y < 0.3 || b.min.y > 2.6) continue;
     const dx = Math.max(b.min.x - x, 0, x - b.max.x), dz = Math.max(b.min.z - z, 0, z - b.max.z);
     if (dx * dx + dz * dz < r * r) return true;
   }
@@ -847,7 +866,7 @@ function generateWaypoints() {
   // Haritadaki her engelin etrafına otomatik saklanma noktaları üret
   const cand = hidingWaypoints.slice();
   wallColliders.forEach(b => {
-    if (b.isOuter || b.noWaypoint) return;
+    if (b.isOuter || b.noWaypoint || b.min.y > 2.6) return;
     const cx = (b.min.x + b.max.x) / 2, cz = (b.min.z + b.max.z) / 2, o = 0.95;
     const pts = [[b.min.x - o, cz], [b.max.x + o, cz], [cx, b.min.z - o], [cx, b.max.z + o]];
     const lx = b.max.x - b.min.x, lz = b.max.z - b.min.z;
@@ -870,11 +889,216 @@ function buildWorld(mapId) {
   if (mapId === currentMapId && world) return;
   disposeWorld();
   world = new THREE.Group(); scene.add(world);
-  camoTargets = []; wallColliders = []; hidingWaypoints = []; decoAnim = [];
+  camoTargets = []; wallColliders = []; hidingWaypoints = []; decoAnim = []; elevWaypoints = []; mapFx = { lasers: [] };
   MAP_BUILDERS[mapId](makeAdder());
   buildNav(); generateWaypoints();
+  elevWaypoints.forEach(w => { const nf = nearestFree(cellOf(w.anchor.x), cellOf(w.anchor.z)); if (nf) { if (!cellFree(cellOf(w.anchor.x), cellOf(w.anchor.z))) w.anchor.set(NAV_MIN + nf[0] + 0.5, 0, NAV_MIN + nf[1] + 0.5); hidingWaypoints.push(w); } });
   currentMapId = mapId;
 }
+/* ================= YENİ HARİTALAR ================= */
+let elevWaypoints = [], mapFx = { lasers: [] };
+// Yükseltilmiş saklanma noktası: (x, üst yükseklik, z) ve tırmanma için zemindeki (ax, az) noktası
+function EW(x, y, z, ax, az) { const v = new THREE.Vector3(x, y, z); v.anchor = new THREE.Vector3(ax, 0, az); elevWaypoints.push(v); }
+function stairs(add, x0, z0, dx, dz, w, steps, baseY, color) {
+  for (let i = 0; i < steps; i++) {
+    const h = (i + 1) * 0.35, x = x0 + dx * i * 0.7, z = z0 + dz * i * 0.7;
+    add(new THREE.BoxGeometry(dx ? 0.7 : w, h, dz ? 0.7 : w), i % 2 ? color : 0x78716c, 'stripes', '#00000022', x, baseY + h / 2, z, true, 1, 1, { noWp: true });
+  }
+}
+
+// ---------------- HARİTA 4: GECE MÜZESİ (karanlık) ----------------
+function buildMuseum(add) {
+  scene.background = new THREE.Color(0x040509); scene.fog = new THREE.FogExp2(0x040509, 0.032);
+  world.add(new THREE.AmbientLight(0x64748b, 0.1));
+  world.add(new THREE.HemisphereLight(0x93c5fd, 0x0b0b0b, 0.07));
+  [[-26, -24, 0xfde68a], [26, -24, 0xbfdbfe], [-26, 24, 0xfecaca], [26, 24, 0xddd6fe], [0, -6, 0xfef3c7]].forEach(([x, z, c]) => addLight(c, 0.32, 13, x, 6.8, z, true));
+
+  add(new THREE.BoxGeometry(80, 1, 80), 0x3f3a36, 'checker', '#2a2623', 0, -0.5, 0, false, 20, 20);
+  outerWalls(add, [[0x7f1d1d, '#450a0a'], [0x1e3a8a, '#172554'], [0x14532d, '#052e16'], [0x581c87, '#3b0764']], 'wood', 9);
+  // Galeri bölmeleri (kapı boşluklu)
+  const part = (w, d, x, z, c, dc) => add(new THREE.BoxGeometry(w, 6, d), c, 'brick', dc, x, 3, z, true, Math.max(1, Math.max(w, d) / 4), 1);
+  part(1, 22, -14, -27, 0x9f1239, '#881337'); part(1, 22, 14, -27, 0x1d4ed8, '#1e3a8a');
+  part(1, 22, -14, 27, 0x047857, '#064e3b'); part(1, 22, 14, 27, 0x7e22ce, '#581c87');
+  part(20, 1, -29, -10, 0xb45309, '#78350f'); part(20, 1, 29, -10, 0x0e7490, '#164e63');
+  part(20, 1, -29, 10, 0xbe185d, '#831843'); part(20, 1, 29, 10, 0x4d7c0f, '#365314');
+  // Tablolar (bukalemunlar için renkli kamuflaj yüzeyleri)
+  const pcols = [[0xfacc15, 'dots', '#ca8a04'], [0x22d3ee, 'stripes', '#0e7490'], [0xf472b6, 'carpet', '#be185d'], [0x4ade80, 'dots', '#15803d'], [0xfb923c, 'stripes', '#c2410c'], [0xa78bfa, 'carpet', '#6d28d9']];
+  let pi = 0;
+  [[-13.4, -30, 'x'], [-13.4, -22, 'x'], [13.4, -30, 'x'], [13.4, -22, 'x'], [-14.6, 26, 'x'], [-14.6, 33, 'x'], [14.6, 26, 'x'], [14.6, 33, 'x'], [-30, -10.6, 'z'], [30, -10.6, 'z'], [-28, 10.6, 'z'], [28, 10.6, 'z'], [-20, -39.1, 'z'], [20, -39.1, 'z'], [-24, 39.1, 'z'], [24, 39.1, 'z']].forEach(([x, z, o]) => {
+    const [c, t, d] = pcols[pi++ % pcols.length];
+    add(new THREE.BoxGeometry(o === 'x' ? 0.15 : 4.2, 3, o === 'x' ? 4.2 : 0.15), c, t, d, x, 3.2, z, false, 2, 2);
+    add(new THREE.BoxGeometry(o === 'x' ? 0.2 : 4.6, 3.4, o === 'x' ? 4.6 : 0.2), 0xb45309, null, null, x + (o === 'x' ? (x > 0 ? 0.03 : -0.03) : 0), 3.2, z + (o === 'z' ? (z > 0 ? 0.03 : -0.03) : 0), false);
+  });
+  // Kaideler ve heykeller
+  [[-30, -30, 0], [-22, -32, 1], [-32, -18, 2], [24, -32, 3], [32, -20, 4], [22, -18, 5], [-24, 30, 6], [-32, 20, 7], [30, 32, 1], [22, 22, 3], [32, 20, 5]].forEach(([x, z, k]) => {
+    add(new THREE.BoxGeometry(1.8, 1.3, 1.8), 0xe7e5e4, 'stone', '#d6d3d1', x, 0.65, z, true);
+    const col = [0xd4a017, 0xb87333, 0x94a3b8, 0x10b981, 0xef4444, 0x6366f1, 0xf59e0b, 0xe5e7eb][k];
+    const geo = [new THREE.TorusKnotGeometry(0.5, 0.18, 48, 8), new THREE.SphereGeometry(0.7, 14, 10), new THREE.ConeGeometry(0.6, 1.6, 8), new THREE.OctahedronGeometry(0.8), new THREE.DodecahedronGeometry(0.7), new THREE.TorusGeometry(0.55, 0.2, 8, 18), new THREE.CylinderGeometry(0.3, 0.6, 1.6, 8), new THREE.IcosahedronGeometry(0.75)][k];
+    add(geo, col, null, null, x, 2.1, z, false, 1, 1, { emissive: col, ei: 0.08 });
+  });
+  // Vitrinler (cam)
+  [[-6, -24], [6, -30], [-6, 30], [6, 24]].forEach(([x, z], i) => {
+    const glass = add(new THREE.BoxGeometry(3.2, 2.2, 1.8), 0x93c5fd, null, null, x, 1.1, z, true);
+    glass.material.transparent = true; glass.material.opacity = 0.28; glass.castShadow = false;
+    add(new THREE.OctahedronGeometry(0.45), [0xf43f5e, 0x22d3ee, 0xa3e635, 0xfbbf24][i], null, null, x, 1.3, z, false, 1, 1, { emissive: [0xf43f5e, 0x22d3ee, 0xa3e635, 0xfbbf24][i], ei: 0.9 });
+  });
+  // Merkez: dinozor iskeleti
+  add(new THREE.BoxGeometry(12, 0.45, 5), 0x57534e, 'stone', '#44403c', 0, 0.22, -2, true, 3, 1);
+  for (let i = 0; i < 7; i++) add(new THREE.TorusGeometry(1.2 - Math.abs(i - 3) * 0.12, 0.08, 6, 12, Math.PI), 0xe7e5e4, null, null, -3.6 + i * 1.2, 2.2, -2, false, 1, 1, { rotY: Math.PI / 2 });
+  add(new THREE.CylinderGeometry(0.15, 0.1, 10, 8), 0xe7e5e4, null, null, 0, 3.2, -2, false, 1, 1, { rotZ: Math.PI / 2 });
+  add(new THREE.SphereGeometry(0.9, 10, 8), 0xe7e5e4, null, null, 5.6, 3.6, -2, false);
+  [[-2.5, -3.2], [-2.5, -0.8], [2.5, -3.2], [2.5, -0.8]].forEach(([x, z]) => add(new THREE.CylinderGeometry(0.2, 0.2, 2.9, 6), 0xd6d3d1, null, null, x, 1.7, z, true));
+  // Banklar
+  [[-6, 8], [6, 8], [-24, 0], [24, 0], [0, 18]].forEach(([x, z]) => add(new THREE.BoxGeometry(3, 0.9, 1), 0x7c2d12, 'wood', '#431407', x, 0.45, z, true));
+  // Güvenlik lazerleri (değersen alarm çalar)
+  [[-14, -10, -14, -4], [14, 4, 14, 10], [-8, 14, 8, 14], [-4, -14, 4, -14], [-38, 0, -34, 0], [34, 0, 38, 0]].forEach(([x1, z1, x2, z2]) => {
+    const len = Math.hypot(x2 - x1, z2 - z1);
+    const m = new THREE.Mesh(new THREE.BoxGeometry(len, 0.05, 0.05), new THREE.MeshBasicMaterial({ color: 0xff2244 }));
+    m.position.set((x1 + x2) / 2, 0.55, (z1 + z2) / 2); m.rotation.y = -Math.atan2(z2 - z1, x2 - x1); world.add(m);
+    [[x1, z1], [x2, z2]].forEach(([x, z]) => add(new THREE.CylinderGeometry(0.12, 0.12, 1.1, 6), 0x1f2937, null, null, x, 0.55, z, false));
+    mapFx.lasers.push({ x1, z1, x2, z2, mesh: m });
+  });
+}
+
+// ---------------- HARİTA 5: PAZAR YERİ (gündüz, açık hava) ----------------
+function buildMarket(add) {
+  scene.background = new THREE.Color(0x7dd3fc); scene.fog = new THREE.FogExp2(0xbae6fd, 0.011);
+  world.add(new THREE.AmbientLight(0xfff7ed, 0.62));
+  world.add(new THREE.HemisphereLight(0x87ceeb, 0x8b5a2b, 0.5));
+  const sun = new THREE.DirectionalLight(0xfff1c1, 0.75); sun.position.set(30, 50, 20); world.add(sun);
+  add(new THREE.BoxGeometry(80, 1, 80), 0x8f8a84, 'stone', '#cfc9c3', 0, -0.5, 0, false, 26, 26);
+  outerWalls(add, [[0xfbbf24, '#d97706'], [0xf87171, '#dc2626'], [0x60a5fa, '#2563eb'], [0x34d399, '#059669']], 'brick', 8);
+  // Pencereler (dış duvar süsleri)
+  for (let t = -30; t <= 30; t += 12) {
+    add(new THREE.BoxGeometry(3, 2.5, 0.2), 0x1e3a8a, null, null, t, 5, -39.1, false);
+    add(new THREE.BoxGeometry(3, 2.5, 0.2), 0x7c2d12, null, null, t + 6, 5, 39.1, false);
+  }
+  // Saat kulesi (merkez)
+  add(new THREE.BoxGeometry(3.4, 12, 3.4), 0xd6d3d1, 'brick', '#a8a29e', 0, 6, 0, true, 1, 3);
+  add(new THREE.ConeGeometry(2.8, 3, 4), 0x991b1b, null, null, 0, 13.5, 0, false, 1, 1, { rotY: Math.PI / 4 });
+  add(new THREE.CylinderGeometry(1.1, 1.1, 0.1, 20), 0xffffff, null, null, 0, 9.5, 1.75, false, 1, 1, { rotX: Math.PI / 2 });
+  // Tezgâh sıraları
+  const awn = [[0xef4444, '#ffffff'], [0x22c55e, '#ffffff'], [0x3b82f6, '#ffffff'], [0xf59e0b, '#ffffff'], [0xa855f7, '#ffffff'], [0xec4899, '#ffffff']];
+  const goods = [0xf97316, 0xdc2626, 0x84cc16, 0x7c3aed, 0xfacc15, 0x16a34a];
+  let si = 0;
+  [-26, -14, 14, 26].forEach(z => [-28, -16, 16, 28].forEach(x => {
+    const [ac, ad] = awn[si % awn.length], g = goods[(si * 5) % goods.length]; si++;
+    add(new THREE.BoxGeometry(5, 1.2, 2), 0x92400e, 'wood', '#78350f', x, 0.6, z, true, 2, 1);
+    add(new THREE.BoxGeometry(4.6, 0.4, 1.6), g, 'dots', '#00000033', x, 1.4, z, false, 3, 1);
+    add(new THREE.BoxGeometry(5.8, 0.15, 3.2), ac, 'stripes', ad, x, 3.3, z + 0.4, false, 3, 2, { rotX: 0.12 });
+    [[-2.6, -0.9], [2.6, -0.9], [-2.6, 1.6], [2.6, 1.6]].forEach(([px, pz]) => add(new THREE.CylinderGeometry(0.08, 0.08, 3.3, 5), 0x451a03, null, null, x + px, 1.65, z + pz, false, 1, 1, { noShadow: true }));
+  }));
+  // Asılı halılar
+  [[-6, -30, 0xb91c1c, '#7f1d1d'], [6, -30, 0x1d4ed8, '#1e3a8a'], [-34, 0, 0xca8a04, '#854d0e'], [34, -4, 0x0f766e, '#134e4a'], [-6, 30, 0x7e22ce, '#581c87'], [6, 30, 0xbe123c, '#881337'], [20, 4, 0xea580c, '#9a3412'], [-20, -4, 0x15803d, '#14532d']].forEach(([x, z, c, d], i) => {
+    const rot = Math.abs(x) > 30 || Math.abs(x) === 20 ? Math.PI / 2 : 0;
+    add(new THREE.BoxGeometry(3.4, 3.6, 0.2), c, 'carpet', d, x, 2.1, z, true, 1, 1, { rotY: rot });
+    add(new THREE.BoxGeometry(4, 0.2, 0.2), 0x451a03, null, null, x, 4, z, false, 1, 1, { rotY: rot });
+  });
+  // Kasalar, fıçılar, baharat çuvalları
+  [[-8, -8, 0x65a30d], [8, 8, 0xd97706], [-10, 20, 0x0ea5e9], [10, -20, 0xdc2626], [-36, -36, 0x92400e], [36, 36, 0x92400e], [-22, 36, 0x16a34a], [22, -36, 0xf97316]].forEach(([x, z, c], i) => {
+    add(new THREE.BoxGeometry(2, 1.6, 2), c, 'wood', '#00000044', x, 0.8, z, true, 1, 1, { rotY: i * 0.4 });
+    if (i % 2 === 0) add(new THREE.BoxGeometry(1.6, 1.3, 1.6), 0xb45309, 'wood', '#78350f', x + 0.2, 2.25, z, true, 1, 1, { rotY: i });
+  });
+  [[-4, 10], [4, -10], [-30, 8], [30, -8], [-12, -36], [12, 36]].forEach(([x, z]) => add(new THREE.CylinderGeometry(0.75, 0.75, 1.6, 12), 0x7c2d12, 'wood', '#451a03', x, 0.8, z, true));
+  [[-2, 20, 0xdc2626], [-0.5, 20.6, 0xfacc15], [1, 20, 0xea580c], [-36, 20, 0x854d0e], [36, 18, 0xb91c1c]].forEach(([x, z, c]) => add(new THREE.CylinderGeometry(0.6, 0.7, 1.1, 10), c, 'dots', '#ffffff55', x, 0.55, z, true));
+  // Kafe şemsiyeleri
+  [[-22, 8], [22, -10]].forEach(([x, z]) => {
+    add(new THREE.CylinderGeometry(1, 1, 0.9, 12), 0xf5f5f4, null, null, x, 0.45, z, true);
+    add(new THREE.CylinderGeometry(0.08, 0.08, 3, 5), 0x9ca3af, null, null, x, 1.5, z, false);
+    add(new THREE.ConeGeometry(2.6, 1.2, 8), 0x06b6d4, 'stripes', '#ffffff', x, 3.3, z, false, 4, 1);
+  });
+}
+
+// ---------------- HARİTA 6: BUZ SARAYI (kaygan zemin, neon) ----------------
+function buildIcePalace(add) {
+  scene.background = new THREE.Color(0x0b1240); scene.fog = new THREE.FogExp2(0x0b1240, 0.016);
+  world.add(new THREE.AmbientLight(0x93c5fd, 0.42));
+  world.add(new THREE.HemisphereLight(0xe0f2fe, 0x1e1b4b, 0.35));
+  [[-24, -24, 0xf472b6], [24, -24, 0x22d3ee], [-24, 24, 0xa78bfa], [24, 24, 0x67e8f9], [0, 0, 0xffffff]].forEach(([x, z, c]) => {
+    const l = addLight(c, 0.6, 30, x, 7, z, true); const ph = Math.random() * 6;
+    decoAnim.push(t => { l.intensity = 0.55 + Math.sin(t * 0.9 + ph) * 0.1; });
+  });
+  add(new THREE.BoxGeometry(80, 1, 80), 0xbae6fd, 'stone', '#e0f2fe', 0, -0.5, 0, false, 14, 14);
+  outerWalls(add, [[0xe0f2fe, '#bae6fd'], [0xc7d2fe, '#a5b4fc'], [0xa5f3fc, '#67e8f9'], [0xf5d0fe, '#e879f9']], 'brick', 9);
+  // Donmuş göl
+  add(new THREE.CylinderGeometry(9, 9, 0.06, 28), 0x38bdf8, null, null, 0, 0.03, 0, false, 1, 1, { emissive: 0x0369a1, ei: 0.25, noShadow: true });
+  // Buz blokları (yarı saydam)
+  const ice = [0xa5f3fc, 0xbfdbfe, 0xc4b5fd, 0x99f6e4];
+  [[-30, -30, 3], [-18, -34, 2], [-34, -16, 2.5], [30, -32, 3], [18, -28, 2], [34, -16, 2.4], [-30, 18, 2.6], [-16, 32, 2], [30, 30, 3], [16, 22, 2.2], [-8, -18, 2], [10, 14, 1.8], [-14, 6, 2.2], [14, -6, 2]].forEach(([x, z, s], i) => {
+    const m = add(new THREE.BoxGeometry(s, s, s), ice[i % 4], 'brick', '#ffffff', x, s / 2, z, true, 1, 1, { rotY: i * 0.6 });
+    m.material.transparent = true; m.material.opacity = 0.82; m.material.roughness = 0.15; m.material.metalness = 0.2;
+  });
+  // Neon kolonlar
+  [[-20, -12, 0xf472b6], [20, -12, 0x22d3ee], [-20, 12, 0xa78bfa], [20, 12, 0x34d399], [0, -26, 0xfacc15], [0, 26, 0xfb7185]].forEach(([x, z, c]) => add(new THREE.CylinderGeometry(0.9, 0.9, 9, 12), c, 'stripes', '#ffffff', x, 4.5, z, true, 2, 3, { emissive: c, ei: 0.55 }));
+  // İglolar
+  [[-28, 32], [30, -22], [-30, -4]].forEach(([x, z], i) => {
+    add(new THREE.SphereGeometry(3.4, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2), 0xf8fafc, 'brick', '#cbd5e1', x, 0, z, true, 3, 1);
+    add(new THREE.BoxGeometry(1.8, 1.8, 1.6), 0xf1f5f9, 'brick', '#cbd5e1', x + (i === 1 ? -3.4 : 3.4), 0.9, z, true, 1, 1, { rotY: Math.PI / 2 });
+  });
+  // Kardan adamlar
+  [[-6, 16], [8, -16], [26, 6], [-24, -24]].forEach(([x, z]) => {
+    add(new THREE.SphereGeometry(1.1, 12, 10), 0xffffff, null, null, x, 1.0, z, true);
+    add(new THREE.SphereGeometry(0.8, 12, 10), 0xffffff, null, null, x, 2.6, z, false);
+    add(new THREE.SphereGeometry(0.55, 10, 8), 0xffffff, null, null, x, 3.7, z, false);
+    add(new THREE.ConeGeometry(0.12, 0.6, 6), 0xf97316, null, null, x, 3.7, z + 0.75, false, 1, 1, { rotX: Math.PI / 2 });
+  });
+  // Kristaller
+  [[-36, 36, 0x22d3ee], [36, 36, 0xe879f9], [36, -36, 0x818cf8], [-36, -36, 0x2dd4bf], [-10, -32, 0xf472b6], [12, 34, 0x67e8f9]].forEach(([x, z, c]) => {
+    add(new THREE.OctahedronGeometry(1.8), c, null, null, x, 1.8, z, true, 1, 1, { emissive: c, ei: 0.45 });
+  });
+  // Kar yığınları (alçak, üstüne çıkılır)
+  [[-12, 24], [12, -24], [24, 18], [-26, 8]].forEach(([x, z]) => add(new THREE.BoxGeometry(3.4, 0.8, 2.4), 0xf1f5f9, 'stone', '#e2e8f0', x, 0.4, z, true, 2, 1));
+}
+
+// ---------------- HARİTA 7: ŞANTİYE KULESİ (çok katlı) ----------------
+function buildConstruction(add) {
+  scene.background = new THREE.Color(0x2a1408); scene.fog = new THREE.FogExp2(0x2a1408, 0.014);
+  world.add(new THREE.AmbientLight(0xfed7aa, 0.36));
+  world.add(new THREE.HemisphereLight(0xfdba74, 0x1c1917, 0.32));
+  [[-24, -30, 0xfde047], [24, -30, 0xfde047], [-24, 30, 0xfef08a], [24, 30, 0xfef08a], [0, 0, 0xffedd5], [-30, -34, 0xfacc15]].forEach(([x, z, c], i) => addLight(c, 0.5, 26, x, i === 5 ? 10 : 6.6, z, true));
+  add(new THREE.BoxGeometry(80, 1, 80), 0x57534e, 'stone', '#b8b2ad', 0, -0.5, 0, false, 26, 26);
+  outerWalls(add, [[0x9ca3af, '#6b7280'], [0xf97316, '#c2410c'], [0x3b82f6, '#1d4ed8'], [0xa8a29e, '#78716c']], 'stripes', 11);
+  // Kuzey ve güney iskele katları (üstü 3.5 m), altından geçilebilir
+  const deck = (w, d, x, z, top, c) => {
+    add(new THREE.BoxGeometry(w, 0.4, d), c, 'checker', '#00000033', x, top - 0.2, z, true, Math.max(1, w / 4), Math.max(1, d / 4), { noWp: true });
+    const px = [-w / 2 + 0.4, w / 2 - 0.4], pz = [-d / 2 + 0.4, d / 2 - 0.4];
+    for (let xx = px[0]; xx <= px[1] + 0.01; xx += Math.max(4, (px[1] - px[0]) / Math.max(1, Math.round(w / 10)))) pz.forEach(zz => add(new THREE.CylinderGeometry(0.22, 0.22, top - 0.4, 6), 0xfacc15, null, null, x + xx, (top - 0.4) / 2 + (top > 4 ? 3.5 : 0) * 0, z + zz, true, 1, 1, { noWp: true }));
+  };
+  deck(70, 8, 0, -34, 3.5, 0x78716c);
+  deck(70, 8, 0, 34, 3.5, 0x78716c);
+  deck(12, 12, 0, 0, 3.5, 0xa8a29e);
+  // Üst kat (7 m) kuzeybatıda
+  add(new THREE.BoxGeometry(10, 0.4, 8), 0xf59e0b, 'checker', '#00000033', -30, 6.8, -34, true, 3, 2, { noWp: true });
+  [[-34.6, -37.6], [-25.4, -37.6], [-34.6, -30.4], [-25.4, -30.4]].forEach(([x, z]) => add(new THREE.CylinderGeometry(0.2, 0.2, 3.1, 6), 0xfacc15, null, null, x, 3.5 + 1.55, z, true, 1, 1, { noWp: true }));
+  // Merdivenler
+  stairs(add, -20, -23.35, 0, -1, 3, 10, 0, 0xf97316);
+  stairs(add, 20, 23.35, 0, 1, 3, 10, 0, 0xf97316);
+  stairs(add, -13.0, 0, 1, 0, 3, 10, 0, 0x3b82f6);
+  stairs(add, -18, -35.5, -1, 0, 3, 10, 3.5, 0xef4444);
+  // Zemin eşyaları
+  add(new THREE.CylinderGeometry(1.6, 1.3, 2.6, 12), 0xf97316, 'stripes', '#ffffff', -24, 1.3, 8, true, 2, 1);
+  add(new THREE.CylinderGeometry(1.6, 1.3, 2.6, 12), 0x0ea5e9, 'stripes', '#ffffff', 26, 1.3, -8, true, 2, 1);
+  [[14, 10], [-30, 20], [30, 18]].forEach(([x, z], i) => { for (let k = 0; k < 3; k++) add(new THREE.CylinderGeometry(0.5, 0.5, 5, 10), [0x64748b, 0xdc2626, 0x16a34a][i], null, null, x, 0.5 + (k === 2 ? 0.85 : 0), z - 0.5 + k * 1.0 - (k === 2 ? 1.0 : 0), true, 1, 1, { rotZ: Math.PI / 2 }); });
+  [[-8, 14], [8, -14], [-34, -10], [34, 10], [18, 24], [-16, -20]].forEach(([x, z], i) => add(new THREE.BoxGeometry(2.4, 1.4, 2.4), [0xb45309, 0x6b7280, 0xdc2626, 0x15803d, 0x2563eb, 0xca8a04][i], 'brick', '#00000033', x, 0.7, z, true, 1, 1));
+  [[-4, 22], [4, -22], [10, 4], [-26, -18], [28, -22], [-28, 26]].forEach(([x, z]) => {
+    add(new THREE.ConeGeometry(0.45, 1.1, 10), 0xf97316, 'stripes', '#ffffff', x, 0.55, z, true, 1, 2);
+  });
+  add(new THREE.BoxGeometry(1.6, 2.6, 1.6), 0x1d4ed8, null, null, 36, 1.3, 26, true);
+  add(new THREE.BoxGeometry(1.6, 2.6, 1.6), 0x16a34a, null, null, 36, 1.3, 23.6, true);
+  // Mavi branda ve kum yığını
+  add(new THREE.BoxGeometry(6, 2.2, 0.2), 0x2563eb, 'stripes', '#1d4ed8', -10, 1.1, 26, true, 2, 1);
+  add(new THREE.DodecahedronGeometry(2, 0), 0xd6a35a, 'dots', '#b45309', 28, 0.8, 2, true);
+  // İskele üstü eşyalar (üst kat saklanma yerleri)
+  [[-28, -31.2, 0xa16207], [-6, -32, 0x6b7280], [12, -36, 0xdc2626], [26, -31.5, 0x16a34a], [-26, 36, 0x2563eb], [-8, 31.5, 0xca8a04], [10, 36.2, 0x7c3aed], [28, 32, 0xf97316], [-3, -3, 0xeab308], [3, 3, 0x0ea5e9]].forEach(([x, z, c]) => add(new THREE.BoxGeometry(2, 1.6, 2), c, 'wood', '#00000044', x, 3.5 + 0.8, z, true, 1, 1, { noWp: true }));
+  add(new THREE.BoxGeometry(2, 1.4, 2), 0xef4444, 'stripes', '#ffffff', -32, 7.0 + 0.7, -36, true, 1, 1, { noWp: true });
+  // Yüksek noktalar: (x, üst, z, tırmanma x, tırmanma z)
+  EW(-25.6, 3.5, -31, -25.6, -29.1); EW(-6, 3.5, -30.6, -6, -29.1); EW(12, 3.5, -34, 12, -29.1); EW(28, 3.5, -31.5, 30.6, -29.1);
+  EW(0, 3.5, -37.4, 0, -29.1); EW(-26, 3.5, 34, -26, 29.1); EW(-10.2, 3.5, 31.5, -10.2, 29.1); EW(10, 3.5, 34.4, 10, 29.1); EW(28, 3.5, 34, 28, 29.1); EW(0, 3.5, 37.4, 3, 29.1);
+  EW(-1.5, 3.5, -4.8, -1.5, -6.9); EW(4.8, 3.5, 1.5, 6.9, 1.5); EW(-4.8, 3.5, 4.5, -4.8, 6.9);
+  EW(-30, 7.0, -33.5, -30, -29.1); EW(-27, 7.0, -36.8, -27.5, -29.1);
+}
+
+MAP_BUILDERS.push(buildMuseum, buildMarket, buildIcePalace, buildConstruction);
 /********************************************************************
  * 5. OYUN DURUMU
  ********************************************************************/
@@ -888,7 +1112,7 @@ const buffs = { speed: 0, radar: 0, freeze: 0, double: 0 };
 let hiders = [], orbs = [], lasers = [], popups = [], pulses = [];
 let flashlight, flashlightTarget, weaponGroup, muzzleLight, closeLight, weaponScene, weaponCam, worldFlash;
 let shake = 0, hitMarker = 0, fovKick = 0;
-const SPAWNS = [new THREE.Vector3(0, 0, 5.5), new THREE.Vector3(0, 0, 9), new THREE.Vector3(0, 0, 11)];
+const SPAWNS = MAP_INFO.map(m => new THREE.Vector3(m.spawn[0], 0, m.spawn[1]));
 
 const player = {
   pos: new THREE.Vector3(0, 0, 5), vel: new THREE.Vector3(), vy: 0, onGround: true, stamina: 1, exhausted: false,
@@ -954,7 +1178,7 @@ class HiderAI {
     const nf = nearestFree(cellOf(sx), cellOf(sz)); if (nf && hiderBlocked(sx, sz, 0.5)) { sx = NAV_MIN + nf[0] + 0.5; sz = NAV_MIN + nf[1] + 0.5; }
     this.group.position.set(sx, 0, sz);
     scene.add(this.group);
-    this.targetPoint = new THREE.Vector3(1e3, 0, 1e3);
+    this.targetPoint = new THREE.Vector3(1e3, 0, 1e3); this.baseY = 0; this.curWp = null; this.targetWp = null;
     this.pickNewHidingSpot(false);
   }
 
@@ -966,20 +1190,40 @@ class HiderAI {
       return dp > minD && !occupied && wp.distanceTo(me.group.position) > 3;
     });
     if (cands.length === 0) cands = hidingWaypoints.slice();
+    // Dikey haritada bukalemunlar yüksek yerleri sever
+    if (MAP_INFO[currentMapId].vertical && !flee && Math.random() < 0.45) { const hi = cands.filter(w => w.anchor); if (hi.length) cands = hi; }
     if (flee) { // oyuncudan uzaklaşan noktaları tercih et
       cands.sort((p, q) => q.distanceTo(playerPos) - p.distanceTo(playerPos));
       cands = cands.slice(0, Math.max(4, cands.length >> 2));
     }
     for (let tries = 0; tries < 6 && cands.length; tries++) {
       const i = Math.floor(Math.random() * cands.length), wp = cands[i];
-      const path = findPath(this.group.position, wp);
-      if (path && path.length) { this.targetPoint.copy(wp); this.path = path; break; }
+      const path = this.buildRoute(wp);
+      if (path && path.length) { this.targetPoint.copy(wp); this.targetWp = wp; this.path = path; break; }
       cands.splice(i, 1);
-      if (!cands.length) { this.targetPoint.copy(wp); this.path = [wp.clone()]; }
     }
     this.fleeing = !!flee;
     this.breakCamouflage();
     this.state = 'MOVING';
+  }
+
+  // Rota: (gerekirse) iskeleden in, A* ile yürü, (gerekirse) hedefe tırman
+  buildRoute(wp) {
+    const pts = [], P = this.group.position;
+    let from = P;
+    if (this.baseY > 0.1) {
+      const a = (this.curWp && this.curWp.anchor) || new THREE.Vector3(P.x, 0, P.z);
+      pts.push(new THREE.Vector3(a.x, this.baseY, a.z));
+      const d = new THREE.Vector3(a.x, 0, a.z); d.climb = true; pts.push(d);
+      from = d;
+    }
+    const goal = wp.anchor || wp;
+    const path = findPath(from, goal);
+    if (!path) return null;
+    path.forEach(p => p.y = 0);
+    pts.push(...path);
+    if (wp.anchor) { const c = new THREE.Vector3(wp.anchor.x, wp.y, wp.anchor.z); c.climb = true; pts.push(c, wp.clone()); }
+    return pts;
   }
 
   breakCamouflage() {
@@ -990,7 +1234,7 @@ class HiderAI {
 
   // RAYCAST İLE EN YAKIN YÜZEYİN RENGİNİ ÖRNEKLEME
   sampleNearestSurfaceColor() {
-    const origin = _v1.copy(this.group.position); origin.y = 1.0;
+    const origin = _v1.copy(this.group.position); origin.y = this.baseY + 1.0;
     const dirs = [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1], [0.707, 0, 0.707], [-0.707, 0, 0.707], [0.707, 0, -0.707], [-0.707, 0, -0.707], [0, -1, 0]];
     let closest = null, minDistance = 6.0;
     for (const d of dirs) {
@@ -1029,31 +1273,46 @@ class HiderAI {
     if (!this.alive) return;
     const frozen = buffs.freeze > 0 && gameState === 'PLAYING';
     if (this.state === 'MOVING' && !frozen) {
+      const P = this.group.position;
       let target = this.path[0] || this.targetPoint;
-      let dx = target.x - this.group.position.x, dz = target.z - this.group.position.z, dist = Math.hypot(dx, dz);
-      while (dist < 0.4 && this.path.length > 1) { this.path.shift(); target = this.path[0]; dx = target.x - this.group.position.x; dz = target.z - this.group.position.z; dist = Math.hypot(dx, dz); }
-      if (dist < 0.4) {
-        this.state = 'HIDING'; this.fleeing = false; this.alarm = 0;
-        this.stayTimer = 18 + Math.random() * 25;
-        this.leftFoot.position.y = this.rightFoot.position.y = 0.125;
-        this.sampleNearestSurfaceColor();
+      if (target.climb) {
+        // Bukalemun duvara/iskeleye tırmanıyor (ya da iniyor)
+        const dy = target.y - this.baseY, sp = (gameState === 'PREP' ? 8 : 4.5) * dt;
+        if (Math.abs(dy) <= sp) { this.baseY = target.y; this.path.shift(); }
+        else this.baseY += Math.sign(dy) * sp;
+        P.y = this.baseY; this.anim += dt * 10;
+        this.leftFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim) * 0.2);
+        this.rightFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim + Math.PI) * 0.2);
+        this.group.rotation.x = -0.25 * Math.sign(dy || 1);
       } else {
-        const speed = gameState === 'PREP' ? 9.5 : (this.fleeing ? this.type.fleeSpeed : 5.8);
-        const step = Math.min(dist, speed * dt);
-        this.group.position.x += dx / dist * step; this.group.position.z += dz / dist * step;
-        const th = Math.atan2(dx, dz);
-        let dh = th - this.heading; while (dh > Math.PI) dh -= Math.PI * 2; while (dh < -Math.PI) dh += Math.PI * 2;
-        this.heading += dh * Math.min(1, dt * 12); this.group.rotation.y = this.heading;
-        this.anim += dt * speed * 1.6;
-        this.leftFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim) * 0.18);
-        this.rightFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim + Math.PI) * 0.18);
-        const bounce = Math.abs(Math.sin(this.anim)) * 0.06;
-        this.group.position.y = bounce;
-        this.group.scale.set(1, 1, 1);
-        this.tail.rotation.z = Math.sin(this.anim * 0.5) * 0.3;
+        this.group.rotation.x = 0;
+        let dx = target.x - P.x, dz = target.z - P.z, dist = Math.hypot(dx, dz);
+        while (dist < 0.4 && this.path.length > 1 && !this.path[1].climb) { this.path.shift(); target = this.path[0]; dx = target.x - P.x; dz = target.z - P.z; dist = Math.hypot(dx, dz); }
+        if (dist < 0.4 && this.path.length > 1) { this.path.shift(); }
+        else if (dist < 0.4) {
+          this.state = 'HIDING'; this.fleeing = false; this.alarm = 0; this.path = [];
+          this.curWp = this.targetWp;
+          this.stayTimer = 18 + Math.random() * 25;
+          this.leftFoot.position.y = this.rightFoot.position.y = 0.125;
+          this.sampleNearestSurfaceColor();
+        } else {
+          const speed = gameState === 'PREP' ? 9.5 : (this.fleeing ? this.type.fleeSpeed : 5.8);
+          const step = Math.min(dist, speed * dt);
+          P.x += dx / dist * step; P.z += dz / dist * step;
+          const th = Math.atan2(dx, dz);
+          let dh = th - this.heading; while (dh > Math.PI) dh -= Math.PI * 2; while (dh < -Math.PI) dh += Math.PI * 2;
+          this.heading += dh * Math.min(1, dt * 12); this.group.rotation.y = this.heading;
+          this.anim += dt * speed * 1.6;
+          this.leftFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim) * 0.18);
+          this.rightFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim + Math.PI) * 0.18);
+          P.y = this.baseY + Math.abs(Math.sin(this.anim)) * 0.06;
+          this.group.scale.set(1, 1, 1);
+          this.tail.rotation.z = Math.sin(this.anim * 0.5) * 0.3;
+        }
       }
     } else if (this.state === 'HIDING') {
-      this.group.position.y += (0 - this.group.position.y) * Math.min(1, dt * 10);
+      this.group.rotation.x = 0;
+      this.group.position.y += (this.baseY - this.group.position.y) * Math.min(1, dt * 10);
       if (this.camoTransition < 1.0) {
         this.camoTransition = Math.min(1.0, this.camoTransition + dt / this.type.camoTime);
         const e = this.camoTransition * this.camoTransition * (3 - 2 * this.camoTransition);
@@ -1105,7 +1364,7 @@ class HiderAI {
 
   inFlashlight(d) {
     if (d > flashlight.distance * 0.7) return false;
-    _v1.copy(this.group.position); _v1.y = 1.3;
+    _v1.copy(this.group.position); _v1.y = this.baseY + 1.3;
     _v2.subVectors(_v1, camera.position).normalize();
     camera.getWorldDirection(_v3);
     if (_v2.dot(_v3) < Math.cos(flashlight.angle * 0.75)) return false;
@@ -1117,7 +1376,7 @@ class HiderAI {
 
   eliminate() {
     this.alive = false;
-    const p = this.group.position.clone(); p.y = 1.2;
+    const p = this.group.position.clone(); p.y = this.baseY + 1.2;
     spawnBurst(p, 40, this.defaultColor, 8);
     spawnBurst(p, 30, null, 7);
     scene.remove(this.group);
@@ -1375,6 +1634,35 @@ function groundAt(x, z, feet) {
   }
   return g;
 }
+function ceilingAt(x, z, feet) {
+  let c = 1e9; const r2 = (PLAYER_R * 0.8) ** 2;
+  for (let i = 0; i < wallColliders.length; i++) {
+    const b = wallColliders[i];
+    if (b.min.y < feet + 1.2 || b.min.y >= c) continue;
+    const dx = Math.max(b.min.x - x, 0, x - b.max.x), dz = Math.max(b.min.z - z, 0, z - b.max.z);
+    if (dx * dx + dz * dz < r2) c = b.min.y;
+  }
+  return c;
+}
+// Harita tehlikeleri: Gece Müzesi güvenlik lazerleri
+let alarmCd = 0;
+function checkMapHazards(dt) {
+  if (alarmCd > 0) alarmCd -= dt;
+  if (!mapFx.lasers.length || alarmCd > 0 || player.pos.y > 0.35) return;
+  const px = player.pos.x, pz = player.pos.z;
+  for (const L of mapFx.lasers) {
+    const vx = L.x2 - L.x1, vz = L.z2 - L.z1, t = clamp(((px - L.x1) * vx + (pz - L.z1) * vz) / (vx * vx + vz * vz), 0, 1);
+    if (Math.hypot(L.x1 + vx * t - px, L.z1 + vz * t - pz) < 0.5) {
+      alarmCd = 5; searchTimer = Math.max(1, searchTimer - 5); shake = 0.4;
+      sfx.playLockError(); sfx.playFlee(0);
+      showToast('🚨 ALARM! Lazere değdin: -5 sn, bukalemunlar yer değiştiriyor!', 'rose');
+      addPopup('-5 sn', null, 0, '#fb7185', 1.2, 30);
+      hiders.filter(h => h.alive && h.state === 'HIDING').sort(() => Math.random() - 0.5).slice(0, 3).forEach(h => h.pickNewHidingSpot(false));
+      L.mesh.material.color.setHex(0xffffff); setTimeout(() => L.mesh.material.color.setHex(0xff2244), 400);
+      break;
+    }
+  }
+}
 function tryJump() {
   if (gameState !== 'PLAYING' || isPaused || !player.onGround) return;
   player.vy = 8.4; player.onGround = false; sfx.playJump();
@@ -1401,7 +1689,7 @@ function updatePlayer(dt) {
   else P.stamina = Math.min(1, P.stamina + dt * (mag > 0.1 ? 0.14 : 0.22));
   const speed = (running ? 11.5 : 7.0) * (1 + shoes * 0.06) * (buffs.speed > 0 ? 1.5 : 1) * (P.onGround ? 1 : 0.92);
   const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
-  const acc = 1 - Math.exp(-dt * (P.onGround ? 14 : 5));
+  const acc = 1 - Math.exp(-dt * (P.onGround ? (MAP_INFO[currentMapId] && MAP_INFO[currentMapId].slippery && P.pos.y < 0.05 ? 1.8 : 14) : 5));
   P.vel.x += (tvx - P.vel.x) * acc; P.vel.z += (tvz - P.vel.z) * acc;
 
   const nx = P.pos.x + P.vel.x * dt;
@@ -1411,6 +1699,7 @@ function updatePlayer(dt) {
 
   // Yerçekimi ve zemin (alçak eşyaların üstüne çıkılabilir)
   P.vy -= 24 * dt; P.pos.y += P.vy * dt;
+  if (P.vy > 0) { const c = ceilingAt(P.pos.x, P.pos.z, P.pos.y); if (P.pos.y + 2.5 > c) { P.pos.y = c - 2.5; P.vy = 0; } }
   const g = groundAt(P.pos.x, P.pos.z, P.pos.y);
   if (P.pos.y <= g) {
     if (!P.onGround && P.vy < -5) { P.land = Math.min(0.35, -P.vy * 0.03); sfx.playLand(); spawnBurst(_v1.set(P.pos.x, g + 0.1, P.pos.z), 6, _pc.set(0x94a3b8), 2, 10, 0.6); }
@@ -1535,7 +1824,7 @@ function drawFx(dt) {
     const pulse = 0.6 + Math.sin(performance.now() * 0.01) * 0.4;
     hiders.forEach(h => {
       if (!h.alive) return;
-      _v1.copy(h.group.position); _v1.y = 1.3;
+      _v1.copy(h.group.position); _v1.y = h.baseY + 1.3;
       const s = project(_v1), d = h.group.position.distanceTo(player.pos);
       const col = '#' + new THREE.Color(h.type.color).getHexString();
       const onScreen = !s.behind && s.x > 30 && s.x < fxW - 30 && s.y > 30 && s.y < fxH - 30;
@@ -1678,7 +1967,7 @@ function startLevel(i) {
 
   const sp = SPAWNS[level.map];
   Object.assign(player, { vy: 0, onGround: true, stamina: 1, exhausted: false, yaw: 0, pitch: 0, tYaw: 0, tPitch: 0, bob: 0, bobAmt: 0, land: 0 });
-  player.pos.copy(sp); player.vel.set(0, 0, 0);
+  player.pos.copy(sp); player.vel.set(0, 0, 0); player.yaw = player.tYaw = MAP_INFO[level.map].spawn[2] || 0;
   applyCamera(0, 0);
 
   const types = [];
@@ -1706,7 +1995,7 @@ function beginHunt() {
   sfx.playBeep(true);
   showToast('🔦 Fener açıldı! Avlanma başladı!', 'emerald');
   // Hazırlık bitti: henüz saklanamayanlar hemen yerlerine ışınlanır ve kamufle olur
-  hiders.forEach(h => { if (h.state === 'MOVING') { h.group.position.copy(h.targetPoint); h.path = []; } });
+  hiders.forEach(h => { if (h.state === 'MOVING') { h.group.position.copy(h.targetPoint); h.baseY = h.targetPoint.y; h.curWp = h.targetWp; h.path = []; } });
 }
 function finishGame(won) {
   if (gameState === 'GAMEOVER') return;
@@ -1983,6 +2272,7 @@ function animate() {
     tickTimers(dt);
     if (gameState === 'PLAYING') {
       updatePlayer(dt);
+      checkMapHazards(dt);
       applyCamera(dt, t);
       hiders.forEach(h => h.update(dt, t));
     }
@@ -2002,12 +2292,12 @@ function animate() {
 
 // Test ve hata ayıklama için küçük bir kanca
 window.__bukalemun = {
-  get state() { return { gameState, isPaused, levelIdx, prepTimer, searchTimer, remainingHiders, totalHiders, currentAmmo, maxAmmo, weaponLockTimer, score, combo, isScanMode, buffs: { ...buffs }, player: { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, pitch: player.pitch, stamina: player.stamina }, waypoints: hidingWaypoints.length, hiders: hiders.map(h => ({ alive: h.alive, type: h.type.id, state: h.state, camo: h.camoTransition, x: h.group.position.x, z: h.group.position.z })) }; },
+  get state() { return { gameState, isPaused, levelIdx, prepTimer, searchTimer, remainingHiders, totalHiders, currentAmmo, maxAmmo, weaponLockTimer, score, combo, isScanMode, buffs: { ...buffs }, player: { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, pitch: player.pitch, stamina: player.stamina }, waypoints: hidingWaypoints.length, hiders: hiders.map(h => ({ alive: h.alive, type: h.type.id, state: h.state, y: h.baseY, camo: h.camoTransition, x: h.group.position.x, z: h.group.position.z })) }; },
   startLevel, fire: fireLaserWeapon, scan: activateScanAbility, jump: tryJump, pause: pauseGame, resume: resumeGame, menu: openMenu,
   skipPrep() { prepTimer = 0.01; },
   aimAt(i) {
     const h = hiders.filter(x => x.alive)[i || 0]; if (!h) return false;
-    const dx = h.group.position.x - playerPos.x, dz = h.group.position.z - playerPos.z, dy = 1.1 - playerPos.y;
+    const dx = h.group.position.x - playerPos.x, dz = h.group.position.z - playerPos.z, dy = h.baseY + 1.1 - playerPos.y;
     player.yaw = player.tYaw = Math.atan2(-dx, -dz); player.pitch = player.tPitch = Math.atan2(dy, Math.hypot(dx, dz));
     applyCamera(0, clock.elapsedTime); camera.updateMatrixWorld(); return true;
   },
@@ -2017,7 +2307,7 @@ window.__bukalemun = {
     for (let r = 5; r <= 9 && !best; r += 2) for (let a = 0; a < 16; a++) {
       const x = p.x + Math.cos(a / 16 * Math.PI * 2) * r, z = p.z + Math.sin(a / 16 * Math.PI * 2) * r;
       if (playerBlocked(x, z, 0) || groundAt(x, z, 0) > 0) continue;
-      const eye = new THREE.Vector3(x, EYE_H, z), tgt = new THREE.Vector3(p.x, 1.1, p.z), dir = tgt.clone().sub(eye), d = dir.length();
+      const eye = new THREE.Vector3(x, EYE_H, z), tgt = new THREE.Vector3(p.x, h.baseY + 1.1, p.z), dir = tgt.clone().sub(eye), d = dir.length();
       _ray.set(eye, dir.normalize()); _ray.far = d; const hit = _ray.intersectObjects(camoTargets, false)[0]; _ray.far = Infinity;
       if (!hit || hit.distance > d - 0.3) { best = [x, z]; break; }
     }
