@@ -100,7 +100,18 @@ body.freeze-active #freeze-vignette{opacity:1}
 .card{background:rgba(30,41,59,.6);border:1px solid rgba(51,65,85,.8);border-radius:18px;padding:14px;font-size:14px;color:#cbd5e1;line-height:1.5}
 .card h3{font-size:16px;margin-bottom:6px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
-#levels{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+#levels{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.lvl.boss{border-color:rgba(250,204,21,.55);background:linear-gradient(160deg,rgba(113,63,18,.55),rgba(30,41,59,.8))}
+.seg{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.seg button{font-family:inherit;cursor:pointer;border:2px solid rgba(71,85,105,.8);background:rgba(30,41,59,.7);color:#cbd5e1;border-radius:12px;padding:7px 12px;font-weight:700;font-size:14px}
+.seg button.sel{border-color:#fbbf24;color:#fde68a;background:rgba(120,53,15,.45)}
+.seg button:disabled{opacity:.4;cursor:default}
+#map-tabs button{padding:6px 10px;font-size:13px}
+#map-desc{text-align:center;color:#94a3b8;font-size:13px;margin-top:6px;min-height:18px}
+#ink-fx{position:fixed;inset:0;pointer-events:none;z-index:17;opacity:0}
+#ink-fx i{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(30,10,45,.98) 0,rgba(46,16,101,.95) 45%,rgba(46,16,101,.0) 72%)}
+#boss-bar{position:absolute;left:50%;top:74px;transform:translateX(-50%);padding:6px 16px;border-radius:999px;background:rgba(66,32,6,.85);border:2px solid #facc15;color:#fde68a;font-weight:700;font-size:16px;white-space:nowrap}
+#stun-text{color:#fda4af}
 .lvl{font-family:inherit;cursor:pointer;text-align:left;border-radius:16px;padding:12px;border:2px solid rgba(71,85,105,.8);background:rgba(30,41,59,.7);color:#e2e8f0;transition:transform .12s,border-color .12s}
 .lvl:hover:not(:disabled){transform:translateY(-2px);border-color:#fbbf24}
 .lvl.sel{border-color:#fbbf24;box-shadow:0 0 16px rgba(251,191,36,.35)}
@@ -155,6 +166,7 @@ body.touch #ammo-mini{display:flex!important}
 <canvas id="fx"></canvas>
 <div id="scan-fx" class="scan-overlay scan-grid"></div>
 <div id="lock-vignette"></div>
+<div id="ink-fx"></div>
 <div id="freeze-vignette"></div>
 
 <div id="crosshair" class="crosshair hidden"><div class="h"></div><div class="v"></div><div class="ring"></div><div class="dot"></div></div>
@@ -178,6 +190,7 @@ body.touch #ammo-mini{display:flex!important}
     <div id="toast-message">Oyun Başladı!</div>
     <div class="chip" style="border-color:rgba(245,158,11,.5)"><div class="ico" style="background:rgba(245,158,11,.2)">⏳</div><div><div class="lbl" style="color:#fcd34d">Kalan Süre</div><div class="big mono" id="game-timer-text">03:00</div></div></div>
   </div>
+  <div id="boss-bar" class="hidden">👑 Kral Bukalemun</div>
   <div id="side" class="chip" style="display:block">
     <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="lbl" style="color:#f0abfc">⭐ Skor</span><span id="combo-text" style="font-size:12px;font-weight:700;color:#fcd34d"></span></div>
     <div id="score-text" class="big" style="font-size:30px">0</div>
@@ -227,6 +240,9 @@ body.touch #ammo-mini{display:flex!important}
     <div style="text-align:center;margin-bottom:6px"><span class="pill">🦎 Low-Poly 3D FPS Kamuflaj Oyunu</span></div>
     <h1 class="title" id="menu-title">Bukalemun Saklambaç</h1>
     <p class="sub" id="menu-subtitle">1 Arayan (Sen) vs Kamufle Olan Yapay Zeka Bukalemunlar!</p>
+    <div id="diff-row" class="seg"></div>
+    <div id="map-tabs" class="seg"></div>
+    <div id="map-desc"></div>
     <div id="levels"></div>
     <div class="row" style="margin-top:16px"><button id="start-btn" class="btn primary">🎯 Oyunu Başlat</button></div>
     <div class="row"><button id="shop-btn" class="btn indigo">🛠️ Atölye <span class="gold" id="menu-gold" style="color:#fde68a"></span></button><button id="how-btn" class="btn">📖 Nasıl Oynanır</button><button id="settings-btn" class="btn">⚙️ Ayarlar</button></div>
@@ -331,13 +347,23 @@ const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0 && m
 
 const SAVE_KEY = 'bukalemun_saklambac_v2';
 const DEFAULT_SAVE = { gold: 0, unlocked: 1, stars: {}, best: {}, upg: {}, totalFound: 0, games: 0, lastLevel: 0,
-  settings: { sens: 1, fov: 72, sfx: 0.8, music: 0.45, invert: false, quality: 'high' } };
+  settings: { sens: 1, fov: 72, sfx: 0.8, music: 0.45, invert: false, quality: 'high', diff: 'normal' } };
 function loadSave() {
   const s = JSON.parse(JSON.stringify(DEFAULT_SAVE));
   try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if (d) { Object.assign(s, d); s.settings = Object.assign({}, DEFAULT_SAVE.settings, d.settings || {}); s.stars = d.stars || {}; s.best = d.best || {}; s.upg = d.upg || {}; } } catch (e) { }
   return s;
 }
 let save = loadSave();
+// Eski kayıt (9 bölümlük sürüm) yeni bölüm düzenine taşınır
+if (!save.v) {
+  const map = i => Math.floor(i / 3) * 4 + (i % 3), ns = {}, nb = {};
+  Object.keys(save.stars).forEach(i => { ns[map(+i)] = save.stars[i]; });
+  Object.keys(save.best).forEach(i => { nb[map(+i)] = save.best[i]; });
+  save.stars = ns; save.best = nb;
+  save.unlocked = map(Math.max(0, (save.unlocked || 1) - 1)) + 1; save.lastLevel = map(save.lastLevel || 0);
+  save.v = 3;
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { }
+}
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { } }
 const upg = id => save.upg[id] || 0;
 
@@ -399,6 +425,12 @@ class SoundEffects {
   playFreeze() { if (!this.ctx) return; for (let i = 0; i < 6; i++) this.tone(1800 + i * 300, 0.25, 'sine', 0.05, null, i * 0.05); this.noise(0.6, 0.06, 6000, 'highpass'); }
   playClick() { if (!this.ok('click', 40)) return; this.tone(520, 0.05, 'triangle', 0.06); }
   playCoin() { if (!this.ok('coin', 50)) return; this.tone(1320, 0.08, 'square', 0.04); this.tone(1760, 0.12, 'square', 0.04, null, 0.06); }
+  playHiss(pan) { if (!this.ok('hiss', 300)) return; this.noise(0.5, 0.12, 3000, 'bandpass'); this.tone(220, 0.4, 'sawtooth', 0.05, 120, 0, null, pan); }
+  playSpit() { if (!this.ctx) return; this.tone(500, 0.18, 'square', 0.08, 90); this.noise(0.2, 0.15, 1500); }
+  playSplat() { if (!this.ctx) return; this.noise(0.35, 0.25, 700); this.tone(140, 0.3, 'sine', 0.15, 60); }
+  playTrap() { if (!this.ctx) return; this.tone(300, 0.15, 'square', 0.12, 150); this.tone(200, 0.3, 'square', 0.1, 80, 0.12); this.noise(0.3, 0.1, 900); }
+  playKingHit() { if (!this.ctx) return; [196, 247, 294].forEach((f, i) => this.tone(f, 0.3, 'sawtooth', 0.1, f * 1.5, i * 0.07)); }
+  playAlarm() { if (!this.ctx) return; for (let i = 0; i < 4; i++) this.tone(i % 2 ? 700 : 950, 0.18, 'square', 0.07, null, i * 0.18); }
   playTick() { if (!this.ok('tick', 400)) return; this.tone(1000, 0.05, 'square', 0.05); }
 }
 const sfx = new SoundEffects();
@@ -489,23 +521,44 @@ const LEVEL_TAGS = [
   ['Buz pateni', 'Kristal mağara', 'Kutup gecesi'],
   ['İskele turu', 'Yüksek irtifa', 'Vinç zirvesi'],
 ];
-// Bölümler: harita başına 3 bölüm; zorluk her bölümde dikleşir
+// Bölümler: harita başına 3 bölüm + 1 "Kral Bukalemun" boss bölümü; zorluk her bölümde dikleşir
+const TYPE_UNLOCK = [0, 1, 2, 4, 6, 9]; // tür hangi kademede ortaya çıkar
 const LEVELS = [];
-for (let m = 0; m < MAPS.length; m++) for (let k = 0; k < 3; k++) {
-  const t = m * 3 + k, n = Math.min(13, 5 + m + k);
-  const sp = Math.min(0.75, 0.12 + t * 0.035);
-  let special = Math.round(n * sp);
-  const mix = [0, 0, 0];
-  if (t >= 1) { mix[1] = Math.ceil(special * 0.6); special -= mix[1]; }
-  if (t >= 2) { mix[2] = special; special = 0; }
-  mix[1] += special; mix[0] = n - mix[1] - mix[2];
-  LEVELS.push({ map: m, k, mix, time: 200 - t * 5 + (n - 5) * 4, flee: Math.min(1, t * 0.06), tag: LEVEL_TAGS[m][k] });
+function mixFor(n, t, specialRatio) {
+  const mix = [0, 0, 0, 0, 0, 0];
+  const avail = [1, 2, 3, 4, 5].filter(i => TYPE_UNLOCK[i] <= t);
+  let special = avail.length ? Math.round(n * specialRatio) : 0;
+  for (let i = 0; special > 0; i++, special--) mix[avail[avail.length - 1 - (i % avail.length)]]++;
+  mix[0] = n - mix.reduce((a, b) => a + b, 0);
+  return mix;
+}
+for (let m = 0; m < MAPS.length; m++) {
+  for (let k = 0; k < 3; k++) {
+    const t = m * 3 + k, n = Math.min(14, 5 + m + k);
+    LEVELS.push({ map: m, k, mix: mixFor(n, t, Math.min(0.8, 0.15 + t * 0.04)), decoys: t >= 3 ? Math.min(5, 1 + Math.floor((t - 3) / 4)) : 0, time: 200 - t * 5 + (n - 5) * 4, flee: Math.min(1, t * 0.06), tag: LEVEL_TAGS[m][k] });
+  }
+  const t = m * 3 + 2;
+  LEVELS.push({ map: m, k: 3, boss: true, mix: mixFor(3 + m, t, 0.6), decoys: 2 + Math.floor(m / 2), time: 210 - m * 8, flee: Math.min(1, 0.3 + t * 0.05), tag: '👑 Kral Bukalemun' });
 }
 const HIDER_TYPES = [
   { id: 'normal', name: 'Sıradan', color: 0xff7b00, pts: 100, camoTime: 2.0, shift: 0.065, alarm: 1.6, fleeSpeed: 8.5, rehide: 1 },
   { id: 'kacak', name: 'Kaçak', color: 0x3b82f6, pts: 150, camoTime: 1.8, shift: 0.06, alarm: 0.55, fleeSpeed: 10.5, rehide: 1.4 },
   { id: 'usta', name: 'Usta', color: 0xa855f7, pts: 200, camoTime: 1.2, shift: 0.032, alarm: 2.6, fleeSpeed: 9, rehide: 0.6 },
+  { id: 'sinsi', name: 'Sinsi', color: 0x14b8a6, pts: 175, camoTime: 1.5, shift: 0.05, alarm: 1.3, fleeSpeed: 9.5, rehide: 2.2, sneaky: true },
+  { id: 'dikenli', name: 'Dikenli', color: 0xef4444, pts: 200, camoTime: 1.8, shift: 0.06, alarm: 3.2, fleeSpeed: 9, rehide: 1, fights: true },
+  { id: 'prizma', name: 'Prizma', color: 0xec4899, pts: 250, camoTime: 1.0, shift: 0.02, alarm: 2.2, fleeSpeed: 9.5, rehide: 0.8, dynamic: true },
+  { id: 'kral', name: 'Kral Bukalemun', color: 0xfacc15, pts: 1000, camoTime: 1.1, shift: 0.03, alarm: 1.4, fleeSpeed: 11, rehide: 1.3, fights: true, boss: true },
+  { id: 'sahte', name: 'Sahte', color: 0xff7b00, pts: 0, camoTime: 0.1, shift: 0.065, alarm: 99, fleeSpeed: 0, rehide: 0, decoy: true },
 ];
+const TYPE_LABEL = ['🟠', '🔵', '🟣', '🟢', '🔴', '💗', '👑'];
+const DIFFS = {
+  kolay: { name: 'Kolay', ico: '🙂', time: 1.3, flee: 0.5, lock: 0.7, mag: 4, reserve: Infinity, shift: 1.5, score: 0.75, decoy: 0, fight: 0.5, missPts: 0, missTime: 0, gold: 0.8, migrate: 0 },
+  normal: { name: 'Normal', ico: '😐', time: 1, flee: 1, lock: 1, mag: 0, reserve: 3, shift: 1, score: 1, decoy: 1, fight: 1, missPts: 25, missTime: 0, gold: 1, migrate: 1 },
+  zor: { name: 'Zor', ico: '😠', time: 0.85, flee: 1.25, lock: 1.2, mag: -2, reserve: 2, shift: 0.75, score: 1.35, decoy: 1.5, fight: 1.35, missPts: 50, missTime: 3, gold: 1.25, migrate: 2 },
+  kabus: { name: 'Kâbus', ico: '💀', time: 0.7, flee: 1.5, lock: 1.5, mag: -4, reserve: 1, shift: 0.55, score: 1.8, decoy: 2, fight: 1.7, missPts: 100, missTime: 5, gold: 1.6, migrate: 2 },
+};
+const diffKey = () => DIFFS[save.settings.diff] ? save.settings.diff : 'normal';
+const diff = () => DIFFS[diffKey()];
 const UPGRADES = [
   { id: 'ammo', ico: '🔋', name: 'Geniş Şarjör', desc: '+2 lazer mermisi', max: 4, base: 60 },
   { id: 'cool', ico: '❄️', name: 'Soğutucu', desc: 'Silah kilidi -0.8 sn', max: 4, base: 80 },
@@ -524,6 +577,7 @@ const ORB_TYPES = [
   { id: 'radar', color: 0x38bdf8, label: '📡 Radar! Bukalemunların yönü görünüyor (6 sn)' },
   { id: 'freeze', color: 0xbfdbfe, label: '❄️ Dondurucu! Bukalemunlar kaçamaz (10 sn)' },
   { id: 'double', color: 0xf472b6, label: '✖2 Çift puan! (15 sn)' },
+  { id: 'ammo', color: 0xa3e635, label: '🔋 Yedek mermi +1 şarjör!' },
 ];
 const HIT_MSGS = ['🎯 Yakaladım seni!', '🦎 Kamuflaj yetmedi!', '😎 Göz var, izan var!', '💥 Bom! Bir bukalemun daha!', '🕵️ Sherlock Bukalemun!', '👀 Kartal gözü!', '🎨 Renk körü değilim!'];
 const FLEE_MSGS = ['🏃 Bir bukalemun kaçıyor!', '😱 Yakalandığını anladı, kaçıyor!', '💨 Kaçak tespit edildi!'];
@@ -1109,7 +1163,8 @@ let totalShotsFired = 0, totalShotsHit = 0;
 let scanActiveTimer = 0, scanCooldownTimer = 0, isScanMode = false, scanTime = BASE_SCAN_TIME, scanCd = BASE_SCAN_CD;
 let score = 0, combo = 0, comboTimer = 0, bestCombo = 0, giggleCooldown = 0, prepFast = false;
 const buffs = { speed: 0, radar: 0, freeze: 0, double: 0 };
-let hiders = [], orbs = [], lasers = [], popups = [], pulses = [];
+let hiders = [], decoys = [], orbs = [], lasers = [], popups = [], pulses = [], projectiles = [];
+let reserveAmmo = 0, inkTimer = 0, inkMax = 1, stunTimer = 0, migrateMarks = [], kingRef = null;
 let flashlight, flashlightTarget, weaponGroup, muzzleLight, closeLight, weaponScene, weaponCam, worldFlash;
 let shake = 0, hitMarker = 0, fovKick = 0;
 const SPAWNS = MAP_INFO.map(m => new THREE.Vector3(m.spawn[0], 0, m.spawn[1]));
@@ -1134,12 +1189,19 @@ const HIDER_GEO = {
   crest: new THREE.ConeGeometry(0.25, 0.5, 6), eye: new THREE.SphereGeometry(0.1, 8, 8), pupil: new THREE.SphereGeometry(0.05, 6, 6),
   foot: new THREE.BoxGeometry(0.28, 0.25, 0.45), tail: new THREE.TorusGeometry(0.28, 0.09, 6, 14, Math.PI * 1.6),
   brim: new THREE.CylinderGeometry(0.42, 0.42, 0.06, 12), hat: new THREE.CylinderGeometry(0.26, 0.3, 0.42, 12),
+  spike: new THREE.ConeGeometry(0.12, 0.35, 5), gem: new THREE.OctahedronGeometry(0.28), crownRing: new THREE.TorusGeometry(0.36, 0.07, 6, 16), crownTip: new THREE.ConeGeometry(0.09, 0.3, 5),
 };
+let thermalOn = false;
+const PROJ_GEO = new THREE.SphereGeometry(0.22, 10, 8);
 const EYE_MAT = new THREE.MeshBasicMaterial({ color: 0xffffff }), PUPIL_MAT = new THREE.MeshBasicMaterial({ color: 0x111111 });
 
 class HiderAI {
-  constructor(index, typeIdx, spawn) {
+  constructor(index, typeIdx, spawn, opts) {
+    opts = opts || {};
     this.index = index; this.type = HIDER_TYPES[typeIdx]; this.typeIdx = typeIdx;
+    this.isDecoy = !!this.type.decoy; this.isKing = !!this.type.boss;
+    this.hp = this.isKing ? (diffKey() === 'kabus' ? 4 : 3) : 1; this.maxHp = this.hp;
+    this.charge = 0; this.fightCd = rand(3, 7); this.telegraphed = false; this.sneakT = rand(9, 16); this.dynT = rand(2.5, 4);
     this.alive = true;
     this.defaultColor = new THREE.Color(this.type.color);
     this.currentColor = this.defaultColor.clone();
@@ -1147,7 +1209,7 @@ class HiderAI {
     this.camoTargetColor = this.defaultColor.clone();
     this.state = 'MOVING'; this.camoTransition = 0; this.isCamouflaged = false; this.stayTimer = 0;
     this.path = []; this.fleeing = false; this.fleesLeft = typeIdx === 1 ? 3 : 2; this.alarm = 0; this.senseT = Math.random() * 0.1;
-    this.blinkT = rand(3, 8); this.heading = 0; this.anim = Math.random() * 10;
+    this.blinkT = rand(3, 8); this.paintT = 0; this.heading = 0; this.anim = Math.random() * 10;
 
     this.group = new THREE.Group();
     this.bodyMaterial = new THREE.MeshStandardMaterial({ color: this.defaultColor, roughness: 0.4, metalness: 0.15, emissive: new THREE.Color(0), emissiveIntensity: 0 });
@@ -1162,7 +1224,19 @@ class HiderAI {
     } else if (typeIdx === 2) { // Usta: küçük silindir şapka
       part(HIDER_GEO.brim, 0, 2.22, 0); part(HIDER_GEO.hat, 0, 2.45, 0);
       this.crestMesh.visible = false;
+    } else if (typeIdx === 3) { // Sinsi: alçak ibik, uzun kuyruk
+      this.crestMesh.scale.set(0.6, 0.5, 0.6); this.tail.scale.set(1.4, 1.4, 1.4);
+    } else if (typeIdx === 4) { // Dikenli: sırt dikenleri
+      [[0, 1.55, -0.55, -0.8], [0, 1.15, -0.66, -1.0], [0, 0.75, -0.7, -1.2]].forEach(([x, y, z, r]) => { const sp = part(HIDER_GEO.spike, x, y, z); sp.rotation.x = r; });
+    } else if (typeIdx === 5) { // Prizma: kristal ibik
+      this.crestMesh.visible = false; const g = part(HIDER_GEO.gem, 0, 2.38, 0); g.scale.set(0.8, 1.3, 0.8);
+    } else if (typeIdx === 6) { // Kral: taç
+      this.crestMesh.visible = false;
+      const r = part(HIDER_GEO.crownRing, 0, 2.28, 0); r.rotation.x = Math.PI / 2;
+      for (let i = 0; i < 5; i++) { const a = i / 5 * Math.PI * 2; part(HIDER_GEO.crownTip, Math.cos(a) * 0.36, 2.48, Math.sin(a) * 0.36); }
     }
+    if (this.isKing) this.group.scale.setScalar(1.55);
+    this.baseScale = this.isKing ? 1.55 : 1;
     this.eyeGroup = new THREE.Group();
     [-0.18, 0.18].forEach(x => {
       const e = new THREE.Mesh(HIDER_GEO.eye, EYE_MAT); e.position.set(x, 1.88, 0.42);
@@ -1173,20 +1247,27 @@ class HiderAI {
     this.leftFoot = part(HIDER_GEO.foot, -0.25, 0.125, 0);
     this.rightFoot = part(HIDER_GEO.foot, 0.25, 0.125, 0);
 
-    const a = (index / 12) * Math.PI * 2;
-    let sx = spawn.x + Math.cos(a) * 3, sz = spawn.z + Math.sin(a) * 3;
-    const nf = nearestFree(cellOf(sx), cellOf(sz)); if (nf && hiderBlocked(sx, sz, 0.5)) { sx = NAV_MIN + nf[0] + 0.5; sz = NAV_MIN + nf[1] + 0.5; }
-    this.group.position.set(sx, 0, sz);
+    if (spawn) {
+      const a = (index / 12) * Math.PI * 2;
+      let sx = spawn.x + Math.cos(a) * 3, sz = spawn.z + Math.sin(a) * 3;
+      const nf = nearestFree(cellOf(sx), cellOf(sz)); if (nf && hiderBlocked(sx, sz, 0.5)) { sx = NAV_MIN + nf[0] + 0.5; sz = NAV_MIN + nf[1] + 0.5; }
+      this.group.position.set(sx, 0, sz);
+    }
     scene.add(this.group);
     this.targetPoint = new THREE.Vector3(1e3, 0, 1e3); this.baseY = 0; this.curWp = null; this.targetWp = null;
-    this.pickNewHidingSpot(false);
+    if (this.isDecoy || opts.wp) {
+      // Sahte bukalemun / hazır yerleştirme: doğrudan saklanma noktasına konur
+      const wp = opts.wp; this.group.position.copy(wp); this.baseY = wp.y; this.curWp = this.targetWp = wp; this.targetPoint.copy(wp);
+      this.state = 'HIDING'; this.stayTimer = 30; this.sampleNearestSurfaceColor();
+      if (this.isDecoy) { this.camoTransition = 1; this.currentColor.copy(this.camoTargetColor); this.bodyMaterial.color.copy(this.currentColor); this.eyeGroup.scale.set(1, 0.35, 1); this.group.scale.set(1, 0.88, 1); this.group.rotation.y = rand(0, 6.28); }
+    } else this.pickNewHidingSpot(false);
   }
 
   pickNewHidingSpot(flee) {
     const minD = flee ? 16 : 10, me = this;
     let cands = hidingWaypoints.filter(wp => {
       const dp = Math.hypot(wp.x - playerPos.x, wp.z - playerPos.z);
-      const occupied = hiders.some(h => h !== me && h.alive && h.targetPoint.distanceTo(wp) < 2.5);
+      const occupied = hiders.some(h => h !== me && h.alive && h.targetPoint.distanceTo(wp) < 2.5) || decoys.some(d => d.alive && d.targetPoint.distanceTo(wp) < 2.5);
       return dp > minD && !occupied && wp.distanceTo(me.group.position) > 3;
     });
     if (cands.length === 0) cands = hidingWaypoints.slice();
@@ -1203,8 +1284,12 @@ class HiderAI {
       cands.splice(i, 1);
     }
     this.fleeing = !!flee;
+    const partial = this.type.sneaky && this.isCamouflaged && !flee;
+    const keep = partial ? this.camoTargetColor.clone() : null;
     this.breakCamouflage();
-    this.state = 'MOVING';
+    // Sinsi bukalemun yer değiştirirken kamuflajının bir kısmını korur
+    if (keep) { this.currentColor.lerp(keep, 0.65); this.bodyMaterial.color.copy(this.currentColor); }
+    this.state = 'MOVING'; this.charge = 0; this.telegraphed = false;
   }
 
   // Rota: (gerekirse) iskeleden in, A* ile yürü, (gerekirse) hedefe tırman
@@ -1250,7 +1335,7 @@ class HiderAI {
     if (closest) c.copy(closest.userData.camoColor);
     // KURAL: Kamuflaj tam kusursuz olmasın! Hafif bir ton farkı kalsın (Usta'da çok daha az).
     const hsl = {}; c.getHSL(hsl);
-    const ls = (this.index % 2 === 0 ? 1 : -1) * this.type.shift;
+    const ls = (this.index % 2 === 0 ? 1 : -1) * this.type.shift * diff().shift;
     const hs = ((this.index % 3) - 1) * (this.typeIdx === 2 ? 0.008 : 0.02);
     c.setHSL((hsl.h + hs + 1) % 1, clamp(hsl.s * 0.92, 0.15, 1), clamp(hsl.l + ls, 0.12, 0.88));
     this.camoStartColor.copy(this.currentColor); this.camoTargetColor.copy(c);
@@ -1258,8 +1343,8 @@ class HiderAI {
   }
 
   startle(strength) {
-    if (!this.alive || this.state !== 'HIDING' || buffs.freeze > 0 || this.fleesLeft <= 0) return;
-    const chance = level.flee * (this.typeIdx === 0 ? 0.6 : 1) * strength;
+    if (!this.alive || this.isDecoy || this.state !== 'HIDING' || buffs.freeze > 0 || this.fleesLeft <= 0) return;
+    const chance = Math.min(1, level.flee * diff().flee) * (this.typeIdx === 0 ? 0.6 : 1) * strength;
     if (Math.random() < chance) {
       this.fleesLeft--;
       this.pickNewHidingSpot(true);
@@ -1306,7 +1391,7 @@ class HiderAI {
           this.leftFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim) * 0.18);
           this.rightFoot.position.y = 0.125 + Math.max(0, Math.sin(this.anim + Math.PI) * 0.18);
           P.y = this.baseY + Math.abs(Math.sin(this.anim)) * 0.06;
-          this.group.scale.set(1, 1, 1);
+          this.group.scale.setScalar(this.baseScale);
           this.tail.rotation.z = Math.sin(this.anim * 0.5) * 0.3;
         }
       }
@@ -1320,13 +1405,24 @@ class HiderAI {
         this.bodyMaterial.color.copy(this.currentColor);
         this.eyeGroup.scale.set(1, 1.0 - 0.65 * e, 1);
       }
-      // Nefes alma ve ara sıra göz kırpma (dikkatli bakan arayan için ipucu)
-      const breathe = Math.sin(t * 3 + this.index) * 0.025;
-      this.group.scale.set(1 + breathe, 0.88 - breathe, 1 + breathe);
-      this.blinkT -= dt;
-      if (this.blinkT < 0) { this.eyeGroup.scale.y = 0.05; if (this.blinkT < -0.14) { this.blinkT = rand(4, 9); this.eyeGroup.scale.y = this.camoTransition >= 1 ? 0.35 : 1; } }
+      // Prizma: rengini sürekli yeniden ayarlar ve hafifçe ışıldar (dinamik kamuflaj)
+      if (this.type.dynamic && this.camoTransition >= 1 && !this.paintT) {
+        this.dynT -= dt;
+        if (this.dynT <= 0) { this.dynT = rand(2.5, 4); this.sampleNearestSurfaceColor(); this.camoTransition = 0.3; }
+        this.bodyMaterial.color.copy(this.currentColor).offsetHSL(Math.sin(t * 0.9 + this.index) * 0.008, 0, Math.sin(t * 1.3) * 0.01);
+      }
+      if (this.paintT > 0) { this.paintT -= dt; this.bodyMaterial.color.setHex(0xff00e6); if (this.paintT <= 0) { this.paintT = 0; this.bodyMaterial.color.copy(this.currentColor); } }
+      // Nefes alma ve ara sıra göz kırpma (dikkatli bakan arayan için ipucu) — sahteler nefes almaz!
+      const bs = this.baseScale;
+      if (!this.isDecoy) {
+        const breathe = Math.sin(t * 3 + this.index) * 0.025;
+        const puff = this.telegraphed ? 0.12 + Math.sin(t * 30) * 0.04 : 0;
+        this.group.scale.set(bs * (1 + breathe + puff), bs * (0.88 - breathe + puff), bs * (1 + breathe + puff));
+        this.blinkT -= dt;
+        if (this.blinkT < 0) { this.eyeGroup.scale.y = 0.05; if (this.blinkT < -0.14) { this.blinkT = rand(4, 9); this.eyeGroup.scale.y = this.camoTransition >= 1 ? 0.35 : 1; } }
+      }
 
-      if (gameState === 'PLAYING' && !frozen) {
+      if (gameState === 'PLAYING' && !frozen && !this.isDecoy) {
         this.stayTimer -= dt;
         const dSeek = Math.hypot(this.group.position.x - playerPos.x, this.group.position.z - playerPos.z);
         // Kıkırdama (stereo yönlü)
@@ -1336,30 +1432,72 @@ class HiderAI {
           sfx.playGiggle(pan, clamp(1.4 - dSeek / 14, 0.4, 1.2));
           showToast('😆 ' + dirWord(this.group.position) + ' bir kıkırdama geldi!');
         }
-        // Fener ışığı altında panik
         this.senseT -= dt;
         if (this.senseT <= 0) {
           this.senseT = 0.1;
+          const lit = this.inFlashlight(dSeek);
+          // Fener ışığı altında panik
           if (level.flee > 0 && this.fleesLeft > 0) {
             if (dSeek < 3.2 && this.typeIdx === 1) this.startle(2);
-            else if (this.inFlashlight(dSeek)) {
+            else if (lit) {
               this.alarm += 0.1 * (dSeek < 9 ? 2 : 1);
               if (this.alarm > this.type.alarm) this.startle(1);
             } else this.alarm = Math.max(0, this.alarm - 0.05);
+          }
+          // Dikenli & Kral: karşılık verir! (mürekkep tükürür)
+          if (this.type.fights && this.state === 'HIDING') {
+            this.fightCd -= 0.1;
+            if (this.fightCd <= 0 && dSeek < 8 && (lit || dSeek < 3.5)) {
+              this.charge += 0.1 * diff().fight;
+              if (this.charge > 0.8 && !this.telegraphed) { this.telegraphed = true; sfx.playHiss(panFor(this.group.position)); addPopup('💢', this.group.position, 2.8 * this.baseScale, '#f87171', 0.9, 34); }
+              if (this.charge > 1.6) { this.spitInk(); }
+            } else if (this.charge > 0) { this.charge = Math.max(0, this.charge - 0.05); if (this.charge < 0.5) this.telegraphed = false; }
+          }
+          // Sinsi: sen bakmıyorken sessizce yer değiştirir
+          if (this.type.sneaky && this.state === 'HIDING') {
+            this.sneakT -= 0.1;
+            if (this.sneakT <= 0) {
+              this.sneakT = rand(9, 16) / Math.max(0.6, diff().flee);
+              _v1.set(this.group.position.x - playerPos.x, 0, this.group.position.z - playerPos.z).normalize();
+              camera.getWorldDirection(_v2); _v2.y = 0; _v2.normalize();
+              if (_v1.dot(_v2) < 0.5 || dSeek > 22) this.pickNewHidingSpot(false);
+            }
           }
         }
         if (this.state === 'HIDING' && this.stayTimer <= 0 && dSeek > 14 && Math.random() < 0.25 * dt * this.type.rehide) this.pickNewHidingSpot(false);
       }
     }
-    // Q TARAMA VURGULAMA
-    if (isScanMode) {
-      this.bodyMaterial.emissive.setHex(0x00ffcc);
-      this.bodyMaterial.emissiveIntensity = 0.85 + Math.sin(t * 20) * 0.25;
-    } else if (frozen) {
-      this.bodyMaterial.emissive.setHex(0x1e3a8a); this.bodyMaterial.emissiveIntensity = 0.12;
-    } else if (this.bodyMaterial.emissiveIntensity !== 0) {
-      this.bodyMaterial.emissive.setHex(0); this.bodyMaterial.emissiveIntensity = 0;
+    this.applyGlow(t, frozen);
+  }
+
+  applyGlow(t, frozen) {
+    const m = this.bodyMaterial;
+    if (thermalOn) {
+      if (this.isDecoy) { m.emissive.setHex(0x1e3a8a); m.emissiveIntensity = 0.5; }
+      else { m.emissive.setHex(0xff5a1f); m.emissiveIntensity = 1.1 + Math.sin(t * 6 + this.index) * 0.15; }
+    } else if (isScanMode) {
+      if (this.isDecoy) { m.emissive.setHex(0xff2244); m.emissiveIntensity = 0.6 + Math.sin(t * 14) * 0.2; }
+      else { m.emissive.setHex(0x00ffcc); m.emissiveIntensity = (this.type.dynamic ? 0.3 : 0.85) + Math.sin(t * 20) * 0.25 * (this.type.dynamic ? 0.4 : 1); }
+    } else if (this.telegraphed) {
+      m.emissive.setHex(0xff0000); m.emissiveIntensity = 0.35 + Math.sin(t * 30) * 0.2;
+    } else if (frozen && !this.isDecoy) {
+      m.emissive.setHex(0x1e3a8a); m.emissiveIntensity = 0.12;
+    } else if (m.emissiveIntensity !== 0) {
+      m.emissive.setHex(0); m.emissiveIntensity = 0;
     }
+  }
+
+  spitInk() {
+    this.charge = 0; this.telegraphed = false; this.fightCd = rand(9, 14) / diff().fight;
+    const from = this.group.position.clone(); from.y = this.baseY + 1.9 * this.baseScale;
+    const to = camera.position.clone();
+    const m = new THREE.Mesh(PROJ_GEO, new THREE.MeshBasicMaterial({ color: 0x581c87 }));
+    m.position.copy(from); scene.add(m);
+    projectiles.push({ m, from, to, t: 0, dur: Math.max(0.35, from.distanceTo(to) / 18), kind: 'ink' });
+    sfx.playSpit();
+    showToast('💦 Dikenli bukalemun mürekkep tükürdü! Kaç!', 'rose');
+    // saldırdıktan sonra kaçar
+    setTimeout(() => { if (this.alive && gameState === 'PLAYING') { this.fleesLeft = Math.max(this.fleesLeft, 1); this.pickNewHidingSpot(true); } }, 350);
   }
 
   inFlashlight(d) {
@@ -1503,7 +1641,8 @@ const ORB_GEO = new THREE.IcosahedronGeometry(0.5, 0), ORB_HALO = new THREE.Sphe
 function placeOrb(orb) {
   let wp = null;
   for (let k = 0; k < 10; k++) { wp = pick(hidingWaypoints); if (wp.distanceTo(player.pos) > 8 && !orbs.some(o => o !== orb && o.mesh.position.distanceTo(wp) < 6)) break; }
-  orb.type = pick(ORB_TYPES);
+  orb.type = pick(ORB_TYPES.filter(o => o.id !== 'ammo' || reserveAmmo !== Infinity));
+  if (reserveAmmo !== Infinity && currentAmmo + reserveAmmo < maxAmmo && !orbs.some(o => o !== orb && o.mesh.visible && o.type && o.type.id === 'ammo')) orb.type = ORB_TYPES.find(o => o.id === 'ammo');
   orb.mesh.material.color.setHex(orb.type.color); orb.halo.material.color.setHex(orb.type.color);
   let x = wp.x + rand(-1.5, 1.5), z = wp.z + rand(-1.5, 1.5);
   if (hiderBlocked(x, z, 0.4)) { x = wp.x; z = wp.z; }
@@ -1532,9 +1671,40 @@ function collectOrb(o) {
     case 'radar': buffs.radar = 6; break;
     case 'freeze': buffs.freeze = 10; sfx.playFreeze(); break;
     case 'double': buffs.double = 15; break;
+    case 'ammo': reserveAmmo += maxAmmo; break;
   }
   showToast(o.type.label, 'cyan');
   o.mesh.visible = o.halo.visible = false; o.respawn = 12;
+}
+
+const stats = { misses: 0, decoyHits: 0, caught: {}, orbs: 0, inked: 0, gadgets: 0 };
+function spawnDecoy() {
+  const free = hidingWaypoints.filter(w => !hiders.some(h => h.alive && h.targetPoint.distanceTo(w) < 2.5) && !decoys.some(d => d.alive && d.targetPoint.distanceTo(w) < 2.5) && w.distanceTo(player.pos) > 6);
+  if (!free.length) return;
+  decoys.push(new HiderAI(100 + decoys.length, 7, null, { wp: pick(free) }));
+}
+function updateProjectiles(dt) {
+  for (let i = projectiles.length - 1; i >= 0; i--) {
+    const p = projectiles[i]; p.t += dt;
+    const k = Math.min(1, p.t / p.dur);
+    p.m.position.lerpVectors(p.from, p.to, k); p.m.position.y += Math.sin(k * Math.PI) * 1.2;
+    p.m.rotation.x += dt * 10;
+    if (k >= 1) {
+      scene.remove(p.m); p.m.material.dispose(); projectiles.splice(i, 1);
+      if (p.kind === 'ink') {
+        if (camera.position.distanceTo(p.to) > 2.2) { addPopup('💨 Kıl payı kaçtın!', null, 0, '#6ee7b7', 1.2, 24); continue; }
+        if (buffs.shield > 0) { buffs.shield = 0; showToast('🛡️ Kalkan mürekkebi engelledi!', 'cyan'); sfx.playPowerup(); continue; }
+        inkMax = inkTimer = 2.8 * (1 - 0.15 * upg('shieldmod')) * (diffKey() === 'kabus' ? 1.3 : 1); stunTimer = 1.3 * (1 - 0.15 * upg('shieldmod'));
+        sfx.playSplat(); shake = 0.5; stats.inked++; buildInkSplats();
+        showToast('🦑 Gözüne mürekkep geldi! Kısa süre göremiyorsun!', 'rose');
+      } else if (p.onLand) p.onLand(p.to);
+    }
+  }
+}
+function buildInkSplats() {
+  const el = $('ink-fx'); let h = '';
+  for (let i = 0; i < 7; i++) { const x = rand(5, 85), y = rand(5, 80), r = rand(14, 34); h += `<i style="left:${x}%;top:${y}%;width:${r}vmax;height:${r}vmax"></i>`; }
+  el.innerHTML = h;
 }
 
 /********************************************************************
@@ -1548,14 +1718,20 @@ function addScore(base, pos, color) {
 }
 function startReload() {
   if (reloadTimer > 0 || currentAmmo >= maxAmmo) return;
+  if (reserveAmmo <= 0) { if (gameState === 'PLAYING') showToast('🔋 Yedek mermi kalmadı! Yeşil mermi küresi bul!', 'rose'); return; }
   reloadTimer = 1.1; sfx.playReload();
+}
+function finishReload() {
+  const take = Math.min(maxAmmo - currentAmmo, reserveAmmo);
+  currentAmmo += take; if (reserveAmmo !== Infinity) reserveAmmo -= take;
 }
 const _center = new THREE.Vector2(0, 0);
 function fireLaserWeapon() {
   if (gameState !== 'PLAYING' || isPaused) return;
   if (weaponLockTimer > 0) { sfx.playLockError(); showToast('Silah kilitli! Soğumasını bekle.', 'rose'); return; }
   if (reloadTimer > 0) { sfx.playLockError(); return; }
-  if (currentAmmo <= 0) { showToast('Mermi bitti! Şarjör yenileniyor...'); startReload(); return; }
+  if (stunTimer > 0) { sfx.playLockError(); showToast('😵 Sersemledin! Ateş edemezsin.', 'rose'); return; }
+  if (currentAmmo <= 0) { if (reserveAmmo > 0) showToast('Mermi bitti! Şarjör yenileniyor...'); startReload(); return; }
 
   currentAmmo--; totalShotsFired++;
   weaponGroup.recoil = 1; muzzleLight.intensity = 2.5; worldFlash.intensity = 1.6; shake = Math.max(shake, 0.12);
@@ -1564,6 +1740,7 @@ function fireLaserWeapon() {
   _ray.setFromCamera(_center, camera); _ray.far = 80;
   const targets = camoTargets.slice();
   hiders.forEach(h => { if (h.alive) targets.push(...h.hitMeshes); });
+  decoys.forEach(h => { if (h.alive) targets.push(...h.hitMeshes); });
   const hits = _ray.intersectObjects(targets, false);
   _ray.far = Infinity;
   const muzzle = new THREE.Vector3(); weaponGroup.updateMatrixWorld(); muzzleLight.getWorldPosition(muzzle); camera.updateMatrixWorld(); camera.localToWorld(muzzle);
@@ -1571,14 +1748,40 @@ function fireLaserWeapon() {
   let hitHider = null;
   if (hits.length) { hitPoint.copy(hits[0].point); hitHider = hits[0].object.userData.hiderRef || null; }
 
-  if (hitHider && hitHider.alive) {
+  if (hitHider && hitHider.alive && hitHider.isDecoy) {
+    // SAHTE BUKALEMUN: zaman ve puan cezası
+    sfx.playLaser(true); sfx.playTrap();
+    spawnLaserBeam(muzzle, hitPoint, false);
+    const pen = Math.round(100 * diff().score), tp = 8;
+    score = Math.max(0, score - pen); searchTimer = Math.max(1, searchTimer - tp); combo = 0;
+    hitHider.alive = false; spawnBurst(hitHider.group.position.clone().setY(hitHider.baseY + 1.2), 40, _pc.set(0x6b7280), 5, 6, 1.2);
+    hitHider.dispose();
+    addPopup(`🪤 SAHTE! -${tp} sn  -${pen}`, hitHider.group.position, 2.6, '#fb7185', 1.4, 26);
+    showToast('🪤 Tuzak! Bu sahte bir bukalemundu! (Sahteler nefes almaz, taramada kırmızı görünür)', 'rose');
+    shake = 0.35; stats.decoyHits++;
+    if (currentAmmo === 0) startReload();
+  } else if (hitHider && hitHider.alive && hitHider.isKing && hitHider.hp > 1) {
+    // KRAL BUKALEMUN: birden fazla isabet gerekir
+    totalShotsHit++; hitHider.hp--;
+    sfx.playLaser(true); sfx.playKingHit();
+    spawnLaserBeam(muzzle, hitPoint, true);
+    spawnBurst(hitPoint, 30, _pc.set(0xfacc15), 6);
+    addScore(200, hitHider.group.position, '#fde047');
+    addPopup(`👑 ${'❤'.repeat(hitHider.hp)}`, hitHider.group.position, 4.2, '#fde047', 1.3, 30);
+    showToast(`👑 Kral yaralandı! Kalan can: ${hitHider.hp}. Kaçıyor ve sahte kopyalar bırakıyor!`, 'cyan');
+    hitMarker = 0.35; shake = 0.4; combo++; comboTimer = 8 + upg('combo') * 3;
+    hitHider.fleesLeft = 9; hitHider.pickNewHidingSpot(true);
+    for (let k = 0; k < 2; k++) spawnDecoy();
+    if (currentAmmo === 0) startReload();
+  } else if (hitHider && hitHider.alive) {
     totalShotsHit++;
     sfx.playLaser(true); sfx.playHitEliminate();
     spawnLaserBeam(muzzle, hitPoint, true);
     const wasCamo = hitHider.isCamouflaged && hitHider.camoTransition > 0.9;
     hitHider.eliminate();
-    remainingHiders--;
-    combo++; comboTimer = 8; bestCombo = Math.max(bestCombo, combo);
+    remainingHiders--; stats.caught[hitHider.typeIdx] = (stats.caught[hitHider.typeIdx] || 0) + 1;
+    if (hitHider.isKing) { spawnBurst(hitHider.group.position.clone().setY(2), 80, _pc.set(0xfacc15), 10); addConfetti(80); showToast('👑 KRAL BUKALEMUN YAKALANDI!', 'emerald'); }
+    combo++; comboTimer = 8 + upg('combo') * 3; bestCombo = Math.max(bestCombo, combo);
     let pts = hitHider.type.pts * combo;
     const got = addScore(pts, hitHider.group.position, combo > 1 ? '#f472b6' : '#6ee7b7');
     if (combo > 1) addPopup('KOMBO x' + combo + '!', hitHider.group.position, 3.2, '#fbbf24', 1.1, 22);
@@ -1587,13 +1790,16 @@ function fireLaserWeapon() {
     showToast(`${pick(HIT_MSGS)} (+${got}) Kalan: ${remainingHiders}/${totalHiders}`, 'emerald');
     save.totalFound = (save.totalFound || 0) + 1;
     if (currentAmmo === 0) startReload();
-    if (remainingHiders <= 0) setTimeout(() => { if (gameState === 'PLAYING') finishGame(true); }, 700);
+    if (remainingHiders <= 0) setTimeout(() => { if (gameState === 'PLAYING') onAllCaught(); }, 700);
   } else {
     sfx.playLaser(false); sfx.playLockError();
     spawnLaserBeam(muzzle, hitPoint, false);
-    weaponLockTimer = lockMax; combo = 0;
+    weaponLockTimer = lockMax; combo = 0; stats.misses++;
     setWeaponLocked(true);
-    showToast(`⚠️ Boşa Ateş! Silah ${lockMax.toFixed(1)} saniye kilitlendi!`, 'rose');
+    const D = diff();
+    if (D.missPts) { score = Math.max(0, score - D.missPts); addPopup('-' + D.missPts, null, 0, '#fb7185', 1, 24); }
+    if (D.missTime) { searchTimer = Math.max(1, searchTimer - D.missTime); addPopup(`-${D.missTime} sn`, null, 0, '#fb7185', 1.1, 28); }
+    showToast(`⚠️ Boşa Ateş! Silah ${lockMax.toFixed(1)} saniye kilitlendi!` + (D.missPts ? ` (-${D.missPts} puan)` : ''), 'rose');
     // Iska yakındaki saklananları ürkütür
     hiders.forEach(h => { if (h.alive && h.group.position.distanceTo(hitPoint) < 3) h.startle(1.2); });
     if (currentAmmo === 0) startReload();
@@ -1687,7 +1893,7 @@ function updatePlayer(dt) {
   const running = wantRun && !P.exhausted && P.stamina > 0;
   if (running) { P.stamina -= dt * 0.22 / (1 + shoes * 0.25); if (P.stamina <= 0) { P.stamina = 0; P.exhausted = true; } }
   else P.stamina = Math.min(1, P.stamina + dt * (mag > 0.1 ? 0.14 : 0.22));
-  const speed = (running ? 11.5 : 7.0) * (1 + shoes * 0.06) * (buffs.speed > 0 ? 1.5 : 1) * (P.onGround ? 1 : 0.92);
+  const speed = (running ? 11.5 : 7.0) * (1 + shoes * 0.06) * (buffs.speed > 0 ? 1.5 : 1) * (P.onGround ? 1 : 0.92) * (stunTimer > 0 ? 0.5 : 1);
   const tvx = (fx * iz + rx * ix) * speed, tvz = (fz * iz + rz * ix) * speed;
   const acc = 1 - Math.exp(-dt * (P.onGround ? (MAP_INFO[currentMapId] && MAP_INFO[currentMapId].slippery && P.pos.y < 0.05 ? 1.8 : 14) : 5));
   P.vel.x += (tvx - P.vel.x) * acc; P.vel.z += (tvz - P.vel.z) * acc;
@@ -1766,8 +1972,9 @@ function updateHUD() {
   setText('hiders-left-text', `Kalan: ${remainingHiders}/${totalHiders}`);
   setText('game-timer-text', formatTime(searchTimer));
   $('game-timer-text').style.color = searchTimer < 20 && gameState === 'PLAYING' ? '#fb7185' : '';
-  const ammoStr = reloadTimer > 0 ? 'Dolduruluyor…' : `${currentAmmo} / ${maxAmmo}`;
-  setText('ammo-text', ammoStr); setText('ammo-mini-text', reloadTimer > 0 ? '…' : `${currentAmmo}/${maxAmmo}`);
+  const resStr = reserveAmmo === Infinity ? '∞' : reserveAmmo;
+  const ammoStr = reloadTimer > 0 ? 'Dolduruluyor…' : `${currentAmmo} / ${maxAmmo} · 🔋${resStr}`;
+  setText('ammo-text', ammoStr); setText('ammo-mini-text', reloadTimer > 0 ? '…' : `${currentAmmo}/${maxAmmo} 🔋${resStr}`);
   const pipsEl = $('ammo-pips');
   if (pipsBuilt !== maxAmmo) { pipsEl.innerHTML = '<i></i>'.repeat(maxAmmo); pipsBuilt = maxAmmo; }
   const pips = pipsEl.children; for (let i = 0; i < pips.length; i++) pips[i].className = i < currentAmmo ? '' : 'off';
@@ -1800,6 +2007,11 @@ function updateHUD() {
   if (buffs.radar > 0) b.push(`📡 Radar ${buffs.radar.toFixed(1)}s`);
   if (buffs.freeze > 0) b.push(`❄️ Dondurucu ${buffs.freeze.toFixed(1)}s`);
   if (buffs.double > 0) b.push(`✖2 Çift Puan ${buffs.double.toFixed(1)}s`);
+  if (stunTimer > 0) b.push(`<span id="stun-text">😵 Sersem ${stunTimer.toFixed(1)}s</span>`);
+  $('ink-fx').style.opacity = inkTimer > 0 ? Math.min(1, inkTimer / inkMax * 1.5).toFixed(2) : 0;
+  const bb = $('boss-bar');
+  if (kingRef && kingRef.alive) { bb.classList.remove('hidden'); setText('boss-bar', `👑 Kral Bukalemun ${'❤️'.repeat(kingRef.hp)}${'🖤'.repeat(kingRef.maxHp - kingRef.hp)}`); }
+  else bb.classList.add('hidden');
   const bs = b.join('\n'); if (_txt.get('buffs') !== bs) { _txt.set('buffs', bs); $('buffs').innerHTML = b.map(x => `<div>${x}</div>`).join(''); }
 }
 
@@ -1883,20 +2095,48 @@ let screenBack = 'menu-screen';
 function showScreen(id) { SCREENS.forEach(s => $(s).classList.toggle('hidden', s !== id)); }
 let selLevel = clamp(save.lastLevel || 0, 0, save.unlocked - 1);
 function totalStars() { return Object.values(save.stars).reduce((a, b) => a + b, 0); }
+function mixHtml(L) {
+  const parts = [];
+  if (L.boss) parts.push('👑1');
+  L.mix.forEach((n, t) => { if (n) parts.push(TYPE_LABEL[t] + n); });
+  if (L.decoys) parts.push('🪤' + Math.round(L.decoys * diff().decoy));
+  return parts.join(' ');
+}
 function renderMenu() {
+  const selMap = LEVELS[selLevel].map;
+  // Zorluk seçimi
+  const dr = $('diff-row'); dr.innerHTML = '';
+  Object.keys(DIFFS).forEach(k => {
+    const D = DIFFS[k], b = document.createElement('button');
+    b.className = k === diffKey() ? 'sel' : ''; b.textContent = `${D.ico} ${D.name}`;
+    b.title = `Süre x${D.time} · Puan x${D.score}`;
+    b.onclick = () => { sfx.init(); sfx.playClick(); save.settings.diff = k; persist(); renderMenu(); };
+    dr.appendChild(b);
+  });
+  // Harita sekmeleri
+  const mt = $('map-tabs'); mt.innerHTML = '';
+  MAPS.forEach((name, m) => {
+    const b = document.createElement('button'), first = m * 4;
+    b.className = m === selMap ? 'sel' : ''; b.disabled = first >= save.unlocked;
+    b.innerHTML = `${MAP_INFO[m].ico} ${name}${b.disabled ? ' 🔒' : ''}`;
+    b.onclick = () => { sfx.init(); sfx.playClick(); selLevel = Math.min(save.unlocked - 1, first + 3); if (LEVELS[selLevel].map !== m) selLevel = first; save.lastLevel = selLevel; persist(); renderMenu(); buildWorld(m); };
+    mt.appendChild(b);
+  });
+  $('map-desc').textContent = MAP_INFO[selMap].desc;
   const el = $('levels'); el.innerHTML = '';
   LEVELS.forEach((L, i) => {
-    const b = document.createElement('button'); b.className = 'lvl' + (i === selLevel ? ' sel' : '');
+    if (L.map !== selMap) return;
+    const b = document.createElement('button'); b.className = 'lvl' + (i === selLevel ? ' sel' : '') + (L.boss ? ' boss' : '');
     const st = save.stars[i] || 0, locked = i >= save.unlocked;
     b.disabled = locked;
-    const mix = L.mix; const cnt = mix[0] + mix[1] + mix[2];
-    b.innerHTML = `<div class="ln">Bölüm ${i + 1}${locked ? ' 🔒' : ''}</div><div class="lt">${MAPS[L.map]}</div><div class="ls">${'★'.repeat(st)}<span style="color:#334155">${'★'.repeat(3 - st)}</span></div><div class="ld">${L.tag} · 🦎${cnt}${mix[1] ? ` · <span style="color:#60a5fa">●${mix[1]}</span>` : ''}${mix[2] ? ` <span style="color:#c084fc">●${mix[2]}</span>` : ''}</div>`;
-    b.onclick = () => { sfx.init(); sfx.playClick(); selLevel = i; save.lastLevel = i; persist(); renderMenu(); buildWorld(LEVELS[i].map); };
+    b.innerHTML = `<div class="ln">${L.boss ? 'BOSS' : 'Bölüm ' + (L.k + 1)}${locked ? ' 🔒' : ''}</div><div class="lt">${L.tag}</div><div class="ls">${'★'.repeat(st)}<span style="color:#334155">${'★'.repeat(3 - st)}</span></div><div class="ld">${mixHtml(L)} · ⏱${formatTime(Math.round(L.time * diff().time))}</div>`;
+    b.onclick = () => { sfx.init(); sfx.playClick(); selLevel = i; save.lastLevel = i; persist(); renderMenu(); };
     el.appendChild(b);
   });
-  $('start-btn').textContent = `🎯 Bölüm ${selLevel + 1} - Başlat`;
+  const L = LEVELS[selLevel];
+  $('start-btn').textContent = `🎯 ${MAPS[L.map]} · ${L.boss ? 'Kral Bukalemun' : 'Bölüm ' + (L.k + 1)} - Başlat`;
   $('menu-gold').textContent = `💰 ${save.gold}`;
-  $('menu-stats').innerHTML = `⭐ ${totalStars()}/27 yıldız · 🦎 ${save.totalFound || 0} bukalemun yakalandı · 🎮 ${save.games || 0} oyun`;
+  $('menu-stats').innerHTML = `⭐ ${totalStars()}/${LEVELS.length * 3} yıldız · 🦎 ${save.totalFound || 0} bukalemun yakalandı · 🎮 ${save.games || 0} oyun`;
 }
 function openMenu() {
   gameState = 'MENU'; isPaused = false;
@@ -1942,7 +2182,7 @@ function applyQuality() {
 /********************************************************************
  * 12. OYUN AKIŞI
  ********************************************************************/
-function clearHiders() { hiders.forEach(h => h.dispose()); hiders = []; }
+function clearHiders() { hiders.forEach(h => h.dispose()); hiders = []; decoys.forEach(h => h.dispose()); decoys = []; kingRef = null; }
 function startLevel(i) {
   sfx.init(); Music.start();
   levelIdx = i; level = LEVELS[i]; selLevel = i; save.lastLevel = i; persist();
@@ -1952,10 +2192,16 @@ function startLevel(i) {
   pulses.forEach(p => { scene.remove(p.m); p.m.geometry.dispose(); p.m.material.dispose(); }); pulses = [];
   popups = []; confetti = [];
 
-  maxAmmo = BASE_AMMO + 2 * upg('ammo'); currentAmmo = maxAmmo;
-  lockMax = BASE_LOCK - 0.8 * upg('cool');
+  const D = diff();
+  maxAmmo = Math.max(6, BASE_AMMO + 2 * upg('ammo') + D.mag); currentAmmo = maxAmmo;
+  reserveAmmo = D.reserve === Infinity ? Infinity : maxAmmo * (D.reserve + upg('reserve'));
+  lockMax = (BASE_LOCK - 0.8 * upg('cool')) * D.lock;
+  inkTimer = stunTimer = 0; $('ink-fx').style.opacity = 0;
+  projectiles.forEach(p => { scene.remove(p.m); p.m.material.dispose(); }); projectiles = [];
+  Object.assign(stats, { misses: 0, decoyHits: 0, caught: {}, orbs: 0, inked: 0, gadgets: 0 });
+  migrateMarks = D.migrate >= 2 ? [0.3, 0.65] : D.migrate >= 1 && (levelIdx >= 4) ? [0.55] : [];
   scanTime = BASE_SCAN_TIME + 0.6 * upg('scanlen'); scanCd = BASE_SCAN_CD - 3 * upg('scancd');
-  levelTime = level.time + 10 * upg('time');
+  levelTime = Math.round(level.time * D.time) + 10 * upg('time');
   flashlight.distance = 48 * (1 + 0.12 * upg('light')); flashlight.angle = Math.min(1.0, Math.PI / 4.2 * (1 + 0.12 * upg('light')));
   prepTimer = PREP_DURATION; searchTimer = levelTime; prepFast = false;
   weaponLockTimer = 0; reloadTimer = 0; totalShotsFired = 0; totalShotsHit = 0;
@@ -1972,16 +2218,19 @@ function startLevel(i) {
 
   const types = [];
   level.mix.forEach((n, t) => { for (let k = 0; k < n; k++) types.push(t); });
+  if (level.boss) types.push(6);
   for (let k = types.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [types[k], types[j]] = [types[j], types[k]]; }
   totalHiders = remainingHiders = types.length;
   types.forEach((t, idx) => hiders.push(new HiderAI(idx, t, sp)));
+  kingRef = hiders.find(h => h.isKing) || null;
+  for (let k = 0; k < Math.round((level.decoys || 0) * D.decoy); k++) spawnDecoy();
   spawnOrbs();
 
   SCREENS.forEach(s => $(s).classList.add('hidden'));
   $('blindfold-screen').classList.remove('hidden');
   $('hud').classList.remove('hidden'); $('crosshair').classList.remove('hidden');
   $('touch-ui').classList.toggle('hidden', !isTouch);
-  $('prep-level-text').textContent = `Bölüm ${i + 1}: ${MAPS[level.map]} · ${totalHiders} bukalemun` + (level.mix[1] ? ` · ${level.mix[1]} kaçak` : '') + (level.mix[2] ? ` · ${level.mix[2]} usta` : '');
+  $('prep-level-text').innerHTML = `${MAPS[level.map]} · ${level.boss ? '👑 Kral Bukalemun' : 'Bölüm ' + (level.k + 1)} · ${D.ico} ${D.name}<br>${mixHtml(level)}` + (decoys.length ? `<br>🪤 ${decoys.length} sahte bukalemun var: vurma!` : '');
   $('skip-hint').innerHTML = isTouch ? '(Hızlandırmak için ekrana dokun)' : '(Hızlandırmak için <kbd>Boşluk</kbd>)';
   gameState = 'PREP'; isPaused = false;
   save.games = (save.games || 0) + 1; persist();
@@ -1991,11 +2240,19 @@ function startLevel(i) {
 }
 function beginHunt() {
   gameState = 'PLAYING';
+  if (kingRef) setTimeout(() => showToast('👑 Kral Bukalemun bu haritada! Birkaç isabet gerekir ve karşılık verir!', 'cyan'), 2800);
   $('blindfold-screen').classList.add('hidden');
   sfx.playBeep(true);
   showToast('🔦 Fener açıldı! Avlanma başladı!', 'emerald');
   // Hazırlık bitti: henüz saklanamayanlar hemen yerlerine ışınlanır ve kamufle olur
   hiders.forEach(h => { if (h.state === 'MOVING') { h.group.position.copy(h.targetPoint); h.baseY = h.targetPoint.y; h.curWp = h.targetWp; h.path = []; } });
+}
+function onAllCaught() { finishGame(true); }
+function runMigration() {
+  const list = hiders.filter(h => h.alive && h.state === 'HIDING');
+  const n = Math.max(1, Math.round(list.length * 0.35));
+  list.sort(() => Math.random() - 0.5).slice(0, n).forEach(h => h.pickNewHidingSpot(false));
+  sfx.playAlarm(); showToast(`🔄 Bukalemun göçü! ${n} bukalemun yer değiştiriyor!`, 'rose');
 }
 function finishGame(won) {
   if (gameState === 'GAMEOVER') return;
@@ -2006,8 +2263,10 @@ function finishGame(won) {
   Music.stop();
   const acc = totalShotsFired > 0 ? totalShotsHit / totalShotsFired : 0;
   let stars = 0;
+  const D = diff();
   if (won) { stars = 1; if (searchTimer >= levelTime * 0.4) stars++; if (acc >= 0.7) stars++; score += Math.ceil(searchTimer) * 2; }
-  const gold = Math.floor(score / 12) + (won ? 20 + 10 * stars : 5);
+  score = Math.round(score * D.score);
+  const gold = Math.round((Math.floor(score / 12) + (won ? 20 + 10 * stars : 5) + (won && level.boss ? 60 : 0)) * D.gold * (1 + 0.15 * upg('goldx')));
   save.gold += gold;
   const prevBest = save.best[levelIdx] || 0, newBest = score > prevBest;
   if (newBest) save.best[levelIdx] = score;
@@ -2220,7 +2479,10 @@ function tickTimers(dt) {
   Music.tense = searchTimer < 30;
   if (searchTimer <= 0) { searchTimer = 0; finishGame(false); return; }
   if (weaponLockTimer > 0) { weaponLockTimer -= dt; if (weaponLockTimer <= 0) { weaponLockTimer = 0; setWeaponLocked(false); sfx.playBeep(false); showToast('✅ Silah tekrar hazır!', 'emerald'); } }
-  if (reloadTimer > 0) { reloadTimer -= dt; if (reloadTimer <= 0) { reloadTimer = 0; currentAmmo = maxAmmo; } }
+  if (reloadTimer > 0) { reloadTimer -= dt; if (reloadTimer <= 0) { reloadTimer = 0; finishReload(); } }
+  if (inkTimer > 0) inkTimer = Math.max(0, inkTimer - dt);
+  if (stunTimer > 0) stunTimer = Math.max(0, stunTimer - dt);
+  if (migrateMarks.length && 1 - searchTimer / levelTime >= migrateMarks[0]) { migrateMarks.shift(); runMigration(); }
   if (isScanMode) { scanActiveTimer -= dt; if (scanActiveTimer <= 0) { isScanMode = false; document.body.classList.remove('scan-active'); } }
   else if (scanCooldownTimer > 0) { scanCooldownTimer -= dt; if (scanCooldownTimer <= 0) { scanCooldownTimer = 0; sfx.playBeep(false); } }
   if (comboTimer > 0) { comboTimer -= dt; if (comboTimer <= 0) combo = 0; }
@@ -2248,6 +2510,7 @@ function updateWorldFx(dt, t) {
     if (p.t > 0.9) { scene.remove(p.m); p.m.geometry.dispose(); p.m.material.dispose(); pulses.splice(i, 1); }
   }
   decoAnim.forEach(f => f(t));
+  updateProjectiles(dt);
   updateParticles(dt);
 }
 
@@ -2275,6 +2538,7 @@ function animate() {
       checkMapHazards(dt);
       applyCamera(dt, t);
       hiders.forEach(h => h.update(dt, t));
+      decoys.forEach(h => h.update(dt, t));
     }
   }
   if (!isPaused) updateWorldFx(dt, t);
@@ -2292,7 +2556,7 @@ function animate() {
 
 // Test ve hata ayıklama için küçük bir kanca
 window.__bukalemun = {
-  get state() { return { gameState, isPaused, levelIdx, prepTimer, searchTimer, remainingHiders, totalHiders, currentAmmo, maxAmmo, weaponLockTimer, score, combo, isScanMode, buffs: { ...buffs }, player: { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, pitch: player.pitch, stamina: player.stamina }, waypoints: hidingWaypoints.length, hiders: hiders.map(h => ({ alive: h.alive, type: h.type.id, state: h.state, y: h.baseY, camo: h.camoTransition, x: h.group.position.x, z: h.group.position.z })) }; },
+  get state() { return { gameState, isPaused, levelIdx, prepTimer, searchTimer, remainingHiders, totalHiders, currentAmmo, maxAmmo, reserveAmmo: reserveAmmo === Infinity ? -1 : reserveAmmo, inkTimer, stunTimer, weaponLockTimer, score, combo, isScanMode, buffs: { ...buffs }, player: { x: player.pos.x, y: player.pos.y, z: player.pos.z, yaw: player.yaw, pitch: player.pitch, stamina: player.stamina }, waypoints: hidingWaypoints.length, hiders: hiders.map(h => ({ alive: h.alive, type: h.type.id, state: h.state, y: h.baseY, camo: h.camoTransition, x: h.group.position.x, z: h.group.position.z })) }; },
   startLevel, fire: fireLaserWeapon, scan: activateScanAbility, jump: tryJump, pause: pauseGame, resume: resumeGame, menu: openMenu,
   skipPrep() { prepTimer = 0.01; },
   aimAt(i) {
@@ -2313,6 +2577,21 @@ window.__bukalemun = {
     }
     if (!best) return false; player.pos.set(best[0], 0, best[1]); return true;
   },
+  aimAtDecoy(i) { const d = decoys.filter(x => x.alive)[i || 0]; if (!d) return false; const p = d.group.position; player.pos.set(p.x + 4, 0, p.z); const ok = window.__bukalemun.teleportNearObj(d); const dx = p.x - playerPos.x, dz = p.z - playerPos.z; applyCamera(0, 0); const ddx = p.x - camera.position.x, ddz = p.z - camera.position.z, dy = d.baseY + 1.1 - camera.position.y; player.yaw = player.tYaw = Math.atan2(-ddx, -ddz); player.pitch = player.tPitch = Math.atan2(dy, Math.hypot(ddx, ddz)); applyCamera(0, clock.elapsedTime); camera.updateMatrixWorld(); return ok; },
+  teleportNearObj(h) {
+    const p = h.group.position; let best = null;
+    for (let r = 5; r <= 9 && !best; r += 2) for (let a = 0; a < 16; a++) {
+      const x = p.x + Math.cos(a / 16 * Math.PI * 2) * r, z = p.z + Math.sin(a / 16 * Math.PI * 2) * r;
+      if (playerBlocked(x, z, 0) || groundAt(x, z, 0) > 0) continue;
+      const eye = new THREE.Vector3(x, EYE_H, z), tgt = new THREE.Vector3(p.x, h.baseY + 1.1, p.z), dir = tgt.clone().sub(eye), d = dir.length();
+      _ray.set(eye, dir.normalize()); _ray.far = d; const hit = _ray.intersectObjects(camoTargets, false)[0]; _ray.far = Infinity;
+      if (!hit || hit.distance > d - 0.3) { best = [x, z]; break; }
+    }
+    if (!best) return false; player.pos.set(best[0], 0, best[1]); applyCamera(0, 0); return true;
+  },
+  forceInk() { const h = hiders.find(x => x.alive && x.type.fights) || hiders.find(x => x.alive); if (h) h.spitInk(); return !!h; },
+  kingIndex() { return hiders.filter(x => x.alive).findIndex(x => x.isKing); },
+  get decoyCount() { return decoys.filter(d => d.alive).length; },
   give(type) { const o = orbs[0]; if (!o) return; o.type = ORB_TYPES.find(x => x.id === type) || o.type; collectOrb(o); },
   setGold(g) { save.gold = g; persist(); },
   finish: finishGame,
